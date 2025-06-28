@@ -1,0 +1,39 @@
+﻿@model IEnumerable<Job_Portal.Models.JobPosting>
+
+@{
+    ViewData["Title"] = "Danh sách công việc";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-controller="Jobs" asp-action="Index" method="get">
+    <input type="text" name="search" placeholder="Tìm kiếm công việc..." />
+    <button type="submit">Tìm</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tiêu đề</th>
+            <th>Danh mục</th>
+            <th>Công ty</th>
+            <th>Ngày đăng</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var job in Model)
+        {
+            <tr>
+                <td>@job.Title</td>
+                <td>@job.Category?.Name</td>
+                <td>@job.Company?.Name</td>
+                <td>@job.PostedDate.ToShortDateString()</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@job.Id">Chi tiết</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
++
