@@ -1,4 +1,4 @@
-﻿using Job_Portal.Data;
+using Job_Portal.Data;
 using Job_Portal.Models;
 using Job_Portal.Services;
 using Microsoft.AspNetCore.Identity;
@@ -11,19 +11,25 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 2. Cấu hình Identity đầy đủ
-// *** THAY ĐỔI Ở ĐÂY ***
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false) // Chuyển từ true sang false
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders()
-    .AddRoles<IdentityRole>();
+// 2. Cấu hình Identity một cách đầy đủ và mạnh mẽ
+// Sử dụng AddDefaultIdentity để nạp tất cả các dịch vụ cần thiết cho UI
+// Sau đó, thêm Roles để quản lý vai trò.
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddRoles<IdentityRole>() // <-- Thêm quản lý vai trò vào cấu hình mặc định
+    .AddEntityFrameworkStores<ApplicationDbContext>();
 
-// Đăng ký dịch vụ EmailSender 
+// Đăng ký dịch vụ EmailSender (quan trọng)
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 // 3. Thêm Razor Pages và MVC
 builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages();
+// Thêm AddRazorPagesOptions để đảm bảo các trang trong Area được tìm thấy
+builder.Services.AddRazorPages(options =>
+{
+    options.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage");
+    options.Conventions.AuthorizeAreaPage("Identity", "/Account/Logout");
+});
+
 
 var app = builder.Build();
 
@@ -39,14 +45,15 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// Sử dụng UseAuthentication() và UseAuthorization() là đủ
 app.UseAuthentication();
 app.UseAuthorization();
 
 // 5. Routing
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Jobs}/{action=Index}/{id?}");
+    pattern: "{controller=Jobs}/{action=Index}/{id?}"); // Thay Home bằng Jobs làm mặc định
 
-app.MapRazorPages();
+app.MapRazorPages(); // Quan trọng: Phải có để Identity UI hoạt động
 
 app.Run();
