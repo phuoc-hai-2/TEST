@@ -1,26 +1,27 @@
-﻿using Job_Portal.Data;
+using Job_Portal.Data;
 using Job_Portal.Models;
+using Job_Portal.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services; 
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Cấu hình DbContext dùng SQL Server
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 2. Cấu hình Identity sử dụng ApplicationUser
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
+    .AddDefaultTokenProviders()
+    .AddRoles<IdentityRole>();
 
-// 3. Thêm Razor Pages và MVC
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
-// 4. Cấu hình Middleware pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -28,18 +29,17 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles(); // Đúng cú pháp, không dùng MapStaticAssets()
+app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication(); // Phải có nếu dùng Identity
+app.UseAuthentication();
 app.UseAuthorization();
 
-// 5. Routing
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Jobs}/{action=Index}/{id?}");
 
-app.MapRazorPages(); // Cho Identity Razor Pages
+app.MapRazorPages();
 
 app.Run();
