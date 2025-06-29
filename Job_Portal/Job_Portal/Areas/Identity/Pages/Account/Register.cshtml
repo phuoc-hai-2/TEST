@@ -2,8 +2,10 @@
 @model RegisterModel
 @{
     ViewData["Title"] = "Register";
+    // Thêm một lựa chọn mặc định để người dùng buộc phải chọn
     var roles = new List<SelectListItem>
     {
+        new SelectListItem { Value = "", Text = "--- Please select your role ---" },
         new SelectListItem { Value = "JobSeeker", Text = "I am a Job Seeker" },
         new SelectListItem { Value = "Employer", Text = "I am an Employer" }
     };
@@ -51,9 +53,32 @@
                     </div>
 
                     <div class="form-floating mb-3">
-                        <select asp-for="Input.Role" class="form-select" asp-items="roles"></select>
+                        <select asp-for="Input.Role" id="roleSelector" class="form-select" asp-items="roles"></select>
                         <label asp-for="Input.Role"><i class="bi bi-briefcase"></i> Register as</label>
                         <span asp-validation-for="Input.Role" class="text-danger"></span>
+                    </div>
+
+                    <!-- Các trường chỉ dành cho Job Seeker -->
+                    <div id="jobSeekerFields" style="display: none;">
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.Skills" class="form-control" placeholder="e.g. C#, ASP.NET Core, SQL" />
+                            <label asp-for="Input.Skills"><i class="bi bi-tools"></i> Skills (comma-separated)</label>
+                            <span asp-validation-for="Input.Skills" class="text-danger"></span>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <textarea asp-for="Input.Qualifications" class="form-control" placeholder="e.g. Bachelor's Degree in CS" style="height: 100px"></textarea>
+                            <label asp-for="Input.Qualifications"><i class="bi bi-award"></i> Qualifications</label>
+                            <span asp-validation-for="Input.Qualifications" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <!-- Trường chỉ dành cho Employer -->
+                    <div id="employerFields" style="display: none;">
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.CompanyName" class="form-control" placeholder="e.g. Microsoft" />
+                            <label asp-for="Input.CompanyName"><i class="bi bi-building"></i> Company Name</label>
+                            <span asp-validation-for="Input.CompanyName" class="text-danger"></span>
+                        </div>
                     </div>
 
                     <div class="d-grid">
@@ -73,7 +98,26 @@
     </div>
 </div>
 
-
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const roleSelector = document.getElementById('roleSelector');
+            const jobSeekerFields = document.getElementById('jobSeekerFields');
+            const employerFields = document.getElementById('employerFields');
+
+            function toggleFields() {
+                const selectedRole = roleSelector.value;
+
+                jobSeekerFields.style.display = selectedRole === 'JobSeeker' ? 'block' : 'none';
+                employerFields.style.display = selectedRole === 'Employer' ? 'block' : 'none';
+            }
+
+            // Gọi hàm khi có sự thay đổi lựa chọn
+            roleSelector.addEventListener('change', toggleFields);
+
+            // Gọi hàm ngay khi tải trang để xử lý trường hợp postback (lỗi validation)
+            toggleFields();
+        });
+    </script>
 }

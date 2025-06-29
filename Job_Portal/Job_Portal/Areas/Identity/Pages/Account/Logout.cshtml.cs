@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Job_Portal.Models;
@@ -13,6 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Job_Portal.Areas.Identity.Pages.Account
 {
+    [AllowAnonymous] // Đảm bảo trang này có thể truy cập được
     public class LogoutModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -24,20 +24,32 @@ namespace Job_Portal.Areas.Identity.Pages.Account
             _logger = logger;
         }
 
+        // Phương thức xử lý khi người dùng bấm nút Logout (POST)
         public async Task<IActionResult> OnPost(string returnUrl = null)
         {
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");
+
             if (returnUrl != null)
             {
+                // Nếu có đường dẫn trả về, chuyển hướng đến đó
                 return LocalRedirect(returnUrl);
             }
             else
             {
-                // This needs to be a redirect so that the browser performs a new
-                // request and the identity for the user gets updated.
-                return RedirectToPage();
+                // *** SỬA LỖI Ở ĐÂY ***
+                // Nếu không, luôn chuyển hướng về trang chủ một cách an toàn
+                return RedirectToAction("Index", "Jobs", new { area = "" });
             }
+        }
+
+        // Thêm phương thức để xử lý khi người dùng truy cập trực tiếp (GET)
+        public async Task<IActionResult> OnGet()
+        {
+            // Thực hiện đăng xuất và chuyển hướng về trang chủ
+            await _signInManager.SignOutAsync();
+            _logger.LogInformation("User logged out via GET request.");
+            return RedirectToAction("Index", "Jobs", new { area = "" });
         }
     }
 }

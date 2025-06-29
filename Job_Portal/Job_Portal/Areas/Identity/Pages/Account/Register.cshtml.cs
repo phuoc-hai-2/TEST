@@ -1,18 +1,13 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-#nullable disable
+﻿#nullable disable
 
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Job_Portal.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +25,6 @@ namespace Job_Portal.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
-        // *** BƯỚC 1: Inject RoleManager ***
         private readonly RoleManager<IdentityRole> _roleManager;
 
         public RegisterModel(
@@ -39,7 +33,7 @@ namespace Job_Portal.Areas.Identity.Pages.Account
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            RoleManager<IdentityRole> roleManager) // Thêm vào constructor
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -47,7 +41,7 @@ namespace Job_Portal.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
-            _roleManager = roleManager; // Gán RoleManager
+            _roleManager = roleManager;
         }
 
         [BindProperty]
@@ -75,7 +69,6 @@ namespace Job_Portal.Areas.Identity.Pages.Account
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
 
-            // *** BƯỚC 2: Thêm các thuộc tính mới vào InputModel ***
             [Required]
             [Display(Name = "Full name")]
             public string FullName { get; set; }
@@ -83,6 +76,17 @@ namespace Job_Portal.Areas.Identity.Pages.Account
             [Required]
             [Display(Name = "Register as")]
             public string Role { get; set; }
+
+            // --- CÁC TRƯỜNG THÔNG TIN BỔ SUNG ---
+            // Chúng là nullable (?) vì không phải lúc nào cũng được yêu cầu
+            [Display(Name = "Skills (comma-separated)")]
+            public string? Skills { get; set; }
+
+            [Display(Name = "Qualifications")]
+            public string? Qualifications { get; set; }
+
+            [Display(Name = "Company Name")]
+            public string? CompanyName { get; set; }
         }
 
 
@@ -100,8 +104,19 @@ namespace Job_Portal.Areas.Identity.Pages.Account
             {
                 var user = CreateUser();
 
-                // *** BƯỚC 3: Gán FullName cho người dùng mới ***
+                // Gán các giá trị từ form vào đối tượng user
                 user.FullName = Input.FullName;
+
+                // Gán các giá trị tùy theo vai trò
+                if (Input.Role == "JobSeeker")
+                {
+                    user.Skills = Input.Skills;
+                    user.Qualifications = Input.Qualifications;
+                }
+                else if (Input.Role == "Employer")
+                {
+                    user.CompanyName = Input.CompanyName;
+                }
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -111,8 +126,6 @@ namespace Job_Portal.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    // *** BƯỚC 4: Gán vai trò (Role) cho người dùng ***
-                    // Đảm bảo các vai trò này đã tồn tại trong DB.
                     if (!await _roleManager.RoleExistsAsync("Employer"))
                     {
                         await _roleManager.CreateAsync(new IdentityRole("Employer"));
@@ -122,9 +135,7 @@ namespace Job_Portal.Areas.Identity.Pages.Account
                         await _roleManager.CreateAsync(new IdentityRole("JobSeeker"));
                     }
 
-                    // Thêm người dùng vào vai trò đã chọn
                     await _userManager.AddToRoleAsync(user, Input.Role);
-
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -154,7 +165,6 @@ namespace Job_Portal.Areas.Identity.Pages.Account
                 }
             }
 
-            // If we got this far, something failed, redisplay form
             return Page();
         }
 
