@@ -1,4 +1,4 @@
-﻿using Job_Portal.Data;
+using Job_Portal.Data;
 using Job_Portal.Models;
 using Job_Portal.Services;
 using Microsoft.AspNetCore.Identity;
@@ -11,14 +11,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// 2. Cấu hình Identity đầy đủ
-// *** THAY ĐỔI Ở ĐÂY ***
+// Dòng này gây trùng lặp và cần được xóa bỏ:
+// builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
+
+// 2. Cấu hình Identity đầy đủ và đúng cách (đã bao gồm hỗ trợ vai trò)
+// *** ĐÂY LÀ DÒNG CHÍNH XÁC ***
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false) // Chuyển từ true sang false
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders()
-    .AddRoles<IdentityRole>();
+    .AddRoles<IdentityRole>(); // Đảm bảo hỗ trợ vai trò
 
-// Đăng ký dịch vụ EmailSender 
+// Đăng ký dịch vụ EmailSender
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 // 3. Thêm Razor Pages và MVC
