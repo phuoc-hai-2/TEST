@@ -7,30 +7,28 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Cấu hình DbContext dùng SQL Server
+// 1. DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Dòng này gây trùng lặp và cần được xóa bỏ:
-// builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
+// ✅ CHỈ dùng Identity đầy đủ (hỗ trợ Roles)
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+})
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
 
-// 2. Cấu hình Identity đầy đủ và đúng cách (đã bao gồm hỗ trợ vai trò)
-// *** ĐÂY LÀ DÒNG CHÍNH XÁC ***
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false) // Chuyển từ true sang false
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders()
-    .AddRoles<IdentityRole>(); // Đảm bảo hỗ trợ vai trò
-
-// Đăng ký dịch vụ EmailSender
+// 2. Email Sender
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
-// 3. Thêm Razor Pages và MVC
-builder.Services.AddControllersWithViews();
+// 3. Razor Pages & MVC
 builder.Services.AddRazorPages();
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// 4. Cấu hình Middleware pipeline
+// 4. Middleware
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
