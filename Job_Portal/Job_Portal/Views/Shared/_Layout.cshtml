@@ -38,6 +38,16 @@
                                 👔 Nhà tuyển dụng
                             </a>
                         </li>
+                        <li class="nav-item me-2">
+                            <a class="btn btn-outline-light" asp-area="" asp-controller="Jobs" asp-action="Index">
+                                💼 Việc làm
+                            </a>
+                        </li>
+                        <li class="nav-item me-2">
+                            <a class="btn btn-outline-light" asp-area="" asp-controller="Companies" asp-action="Index">
+                                🏢 Công ty
+                            </a>
+                        </li>
                         @{
                             var isSignedIn = SignInManager.IsSignedIn(User);
                             Job_Portal.Models.ApplicationUser user = null;
@@ -63,6 +73,26 @@
                                             ⚙ Quản lý tài khoản
                                         </a>
                                     </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="JobApplication" asp-action="Index">
+                                            📨 Việc đã ứng tuyển
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Jobs" asp-action="Saved">
+                                            ⭐ Việc đã lưu
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Jobs" asp-action="Recommend">
+                                            🎯 Việc dành cho bạn
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="Jobs" asp-action="Noti">
+                                            🔔 Thông báo việc làm
+                                        </a>
+                                    </li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <form method="post" asp-area="Identity" asp-page="/Account/Logout" class="m-0 p-0">
@@ -74,7 +104,9 @@
                                 </ul>
                             </li>
                             <li class="nav-item me-2">
-                                <a class="btn btn-outline-light" href="#">🔔</a>
+                                <a class="btn btn-outline-light" asp-area="" asp-controller="Notifications" asp-action="Index">
+                                    <span role="img" aria-label="bell">🔔</span>
+                                </a>
                             </li>
                         }
                         else

@@ -1,0 +1,37 @@
+﻿@model Job_Portal.Models.JobPosting
+@{
+    ViewData["Title"] = "Danh sách ứng viên";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <h2>Ứng viên cho: @Model.Title</h2>
+    <p><strong>Địa điểm:</strong> @Model.Location | <strong>Ngày đăng:</strong> @Model.PostedDate.ToString("dd/MM/yyyy")</p>
+    @if (Model.Applications != null && Model.Applications.Any())
+    {
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Họ tên ứng viên</th>
+                    <th>Email</th>
+                    <th>Ngày ứng tuyển</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var app in Model.Applications)
+                {
+                    <tr>
+                        <td>@app.JobSeeker?.FullName</td>
+                        <td>@app.JobSeeker?.Email</td>
+                        <td>@app.AppliedDate.ToString("dd/MM/yyyy")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-warning">Chưa có ứng viên nào cho tin này.</div>
+    }
+    <a asp-action="Dashboard" class="btn btn-secondary">Quay lại Dashboard</a>
+</div>

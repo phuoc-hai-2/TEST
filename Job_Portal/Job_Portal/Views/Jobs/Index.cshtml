@@ -1,78 +1,189 @@
-﻿@model List<Job_Portal.Models.JobPosting>
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<Job_Portal.Models.ApplicationUser> SignInManager
+@inject UserManager<Job_Portal.Models.ApplicationUser> UserManager
+@model List<Job_Portal.Models.JobPosting>
 @{
     ViewData["Title"] = "Danh sách công việc";
+    var isSignedIn = SignInManager.IsSignedIn(User);
 }
+
+
 
 <div class="container mt-4">
     <div class="row">
-        <div class="col-md-3">
-            <div class="card p-3 mb-3" style="border: 1px solid #003366; border-radius: 8px;">
-                <h5 class="card-title text-primary fw-bold mb-3">Việc làm</h5>
-                <ul class="list-unstyled mb-0">
-                    <li class="mb-2"><a href="@Url.Action("Index", "Jobs")" class="text-decoration-none text-dark">Việc làm mới nhất</a></li>
-                    <li class="mb-2"><a href="#" class="text-decoration-none text-dark">Tìm việc làm</a></li>
-                    <li class="mb-2"><a href="#" class="text-decoration-none text-dark">Việc làm quản lý</a></li>
+        <aside class="col-lg-3 sidebar-menu">
+            <div class="sidebar-section">
+                <h5>Việc làm</h5>
+                <ul>
+                    <li><a asp-area="" asp-controller="Jobs" asp-action="Index">Việc làm mới nhất</a></li>
+                    <li><a asp-area="" asp-controller="Jobs" asp-action="Index">Tìm việc làm</a></li>
                 </ul>
             </div>
-
-            <div class="card p-3 mb-3" style="border: 1px solid #003366; border-radius: 8px;">
-                <h5 class="card-title text-primary fw-bold mb-3">Việc của tôi</h5>
-                <ul class="list-unstyled mb-0">
-                    <li class="mb-2"><a href="#" class="text-decoration-none text-dark">Việc đã lưu</a></li>
-                    <li class="mb-2"><a href="#" class="text-decoration-none text-dark">Việc đã ứng tuyển</a></li>
-                    <li class="mb-2"><a href="#" class="text-decoration-none text-dark">Thông báo việc làm</a></li>
-                    <li class="mb-2"><a href="#" class="text-decoration-none text-dark">Việc dành cho bạn</a></li>
-                </ul>
-            </div>
-
-            <div class="card p-3 mb-3" style="border: 1px solid #003366; border-radius: 8px;">
-                <h5 class="card-title text-primary fw-bold mb-3">Công ty</h5>
-                <ul class="list-unstyled mb-0">
-                    <li class="mb-2"><a href="#" class="text-decoration-none text-dark">Tất cả công ty</a></li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="col-md-9">
-            <h2 class="mb-4">Danh sách công việc</h2>
-
-            <form asp-controller="Jobs" asp-action="Index" method="get" class="d-flex mb-4">
-                <input type="text" name="search" class="form-control me-2" placeholder="Tìm kiếm công việc..." aria-label="Tìm kiếm công việc">
-                <button type="submit" class="btn btn-primary">Tìm</button>
-            </form>
-
-            @if (Model != null && Model.Any())
+            @if (isSignedIn)
             {
-                <table class="table table-striped table-hover">
-                    <thead class="bg-primary text-white">
-                        <tr>
-                            <th>Tiêu đề</th>
-                            <th>Danh mục</th>
-                            <th>Công ty</th>
-                            <th>Ngày đăng</th>
-                            <th></th> @* Cột cho nút chi tiết *@
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var job in Model)
-                        {
-                            <tr>
-                                <td>@job.Title</td>
-                                <td>@job.Category.Name</td>
-                                <td>@job.Company.Name</td>
-                                <td>@job.PostedDate.ToString("dd/MM/yyyy")</td>
-                                <td>
-                                    <a asp-controller="Jobs" asp-action="Details" asp-route-id="@job.Id" class="btn btn-sm btn-info">Chi tiết</a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                <div class="sidebar-section">
+                    <h5>Việc của tôi</h5>
+                    <ul>
+                        <li><a asp-area="" asp-controller="Jobs" asp-action="Saved">Việc đã lưu</a></li>
+                        <li><a asp-area="" asp-controller="JobApplication" asp-action="Index">Việc đã ứng tuyển</a></li>
+                        <li><a asp-area="" asp-controller="Jobs" asp-action="Notifications">Thông báo việc làm</a></li>
+                        <li><a asp-area="" asp-controller="Jobs" asp-action="Recommend">Việc dành cho bạn</a></li>
+                    </ul>
+                </div>
             }
-            else
-            {
-                <p class="alert alert-info">Không tìm thấy việc làm nào phù hợp.</p>
-            }
-        </div>
+            <div class="sidebar-section">
+                <h5>Công ty</h5>
+                <ul>
+                    <li><a asp-area="" asp-controller="Companies" asp-action="Index">Tất cả công ty</a></li>
+                </ul>
+            </div>
+        </aside>
+        <section class="col-lg-9">
+            <div class="main-content-section">
+                <h2 class="mb-4">Danh sách công việc</h2>
+
+                <form asp-controller="Jobs" asp-action="Index" method="get" class="d-flex mb-4">
+                    <input type="text" name="search" value="@(Context.Request.Query["search"])" class="form-control me-2" placeholder="Tìm kiếm công việc..." aria-label="Tìm kiếm công việc">
+                    <button type="submit" class="btn btn-primary">Tìm</button>
+                </form>
+
+                @if (Model != null && Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Tiêu đề</th>
+                                    <th>Danh mục</th>
+                                    <th>Công ty</th>
+                                    <th>Địa điểm</th>
+                                    <th>Ngày đăng</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var job in Model)
+                                {
+                                    <tr>
+                                        <td>@job.Title</td>
+                                        <td>@job.Category?.Name</td>
+                                        <td>@job.Company?.Name</td>
+                                        <td>@job.Location</td>
+                                        <td>@job.PostedDate.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            <a asp-controller="Jobs" asp-action="Details" asp-route-id="@job.Id" class="btn btn-sm btn-info">Chi tiết</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="alert alert-info">Không tìm thấy việc làm nào phù hợp.</p>
+                }
+            </div>
+        </section>
     </div>
 </div>
+
+
+
+<style>
+    body {
+        background: linear-gradient(135deg, #f0f4ff 0%, #e6f0ff 100%);
+        min-height: 100vh;
+    }
+
+    .sidebar-menu {
+        min-width: 250px;
+        max-width: 280px;
+    }
+
+    .sidebar-section {
+        border: 1px solid #337ab7;
+        border-radius: 10px;
+        padding: 16px;
+        margin-bottom: 20px;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+        .sidebar-section h5 {
+            color: #0066ff;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .sidebar-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+            .sidebar-section ul li {
+                margin-bottom: 8px;
+            }
+
+                .sidebar-section ul li a {
+                    color: #222;
+                    text-decoration: none;
+                    transition: color 0.2s;
+                    border-radius: 4px;
+                    padding: 2px 6px;
+                    display: inline-block;
+                }
+
+                    .sidebar-section ul li a:hover {
+                        background: #e6f0ff;
+                        color: #0066ff;
+                        text-decoration: underline;
+                    }
+
+    .main-content-section {
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+        padding: 32px 24px 24px 24px;
+        margin-bottom: 30px;
+        min-height: 600px;
+    }
+
+    .table thead {
+        background: linear-gradient(90deg, #337ab7 60%, #5993d0 100%);
+    }
+
+        .table thead th {
+            color: #fff;
+            font-weight: 600;
+        }
+
+    .btn-info {
+        background-color: #5993d0 !important;
+        border: none;
+        color: #fff;
+    }
+
+        .btn-info:hover {
+            background-color: #337ab7 !important;
+        }
+
+    .form-control:focus {
+        box-shadow: 0 0 0 0.2rem rgba(51, 122, 183, 0.1);
+        border-color: #337ab7;
+    }
+
+    media (max-width: 991.98px) {
+        .sidebar-menu
+
+    {
+        max-width: 100%;
+        margin-bottom: 30px;
+    }
+
+    .main-content-section {
+        padding: 15px 5px;
+    }
+
+    }
+</style>

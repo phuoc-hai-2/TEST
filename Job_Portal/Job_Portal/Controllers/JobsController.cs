@@ -54,5 +54,21 @@ namespace Job_Portal.Controllers
 
             return View(job);
         }
+        public IActionResult Saved()
+        {
+            return View();
+        }
+
+        // GET: /Jobs/Notifications
+        public IActionResult Notifications()
+        {
+            return View();
+        }
+
+        // GET: /Jobs/Recommend
+        public IActionResult Recommend()
+        {
+            return View();
+        }
     }
 }
