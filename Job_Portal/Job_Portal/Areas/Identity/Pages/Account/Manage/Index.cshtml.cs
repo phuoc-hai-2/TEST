@@ -2,9 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Job_Portal.Models;
 using Microsoft.AspNetCore.Identity;
@@ -26,39 +24,33 @@ namespace Job_Portal.Areas.Identity.Pages.Account.Manage
             _signInManager = signInManager;
         }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public string Username { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [TempData]
         public string StatusMessage { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public class InputModel
         {
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
             [Phone]
-            [Display(Name = "Phone number")]
+            [Display(Name = "Số điện thoại")]
             public string PhoneNumber { get; set; }
+
+            [Display(Name = "Họ và tên")]
+            [Required(ErrorMessage = "Vui lòng nhập họ và tên.")]
+            [StringLength(100, ErrorMessage = "Họ và tên không được vượt quá 100 ký tự.")]
+            public string FullName { get; set; }
+
+            [Display(Name = "Kỹ năng")]
+            public string Skills { get; set; }
+
+            [Display(Name = "Trình độ học vấn")]
+            public string Qualifications { get; set; }
+
+            [Display(Name = "Tên công ty")]
+            public string CompanyName { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -70,7 +62,11 @@ namespace Job_Portal.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                FullName = user.FullName,
+                Skills = user.Skills,
+                Qualifications = user.Qualifications,
+                CompanyName = user.CompanyName
             };
         }
 
@@ -79,7 +75,7 @@ namespace Job_Portal.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Không tìm thấy user với ID '{_userManager.GetUserId(User)}'.");
             }
 
             await LoadAsync(user);
@@ -91,7 +87,7 @@ namespace Job_Portal.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Không tìm thấy user với ID '{_userManager.GetUserId(User)}'.");
             }
 
             if (!ModelState.IsValid)
@@ -106,13 +102,25 @@ namespace Job_Portal.Areas.Identity.Pages.Account.Manage
                 var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
                 if (!setPhoneResult.Succeeded)
                 {
-                    StatusMessage = "Unexpected error when trying to set phone number.";
+                    StatusMessage = "Có lỗi khi cập nhật số điện thoại.";
                     return RedirectToPage();
                 }
             }
 
+            user.FullName = Input.FullName;
+            user.Skills = Input.Skills;
+            user.Qualifications = Input.Qualifications;
+            user.CompanyName = Input.CompanyName;
+
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+            {
+                StatusMessage = "Có lỗi khi cập nhật hồ sơ.";
+                return RedirectToPage();
+            }
+
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your profile has been updated";
+            StatusMessage = "Cập nhật tài khoản thành công";
             return RedirectToPage();
         }
     }
