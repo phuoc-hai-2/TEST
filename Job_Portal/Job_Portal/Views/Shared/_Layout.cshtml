@@ -6,9 +6,12 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Job Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /> @* Thêm liên kết đến file CSS của bạn nếu có *@
     <style>
+        /* Các style tùy chỉnh có thể đặt ở đây hoặc trong site.css */
         .search-bar {
             max-width: 600px;
             flex-grow: 1;
@@ -24,85 +27,79 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
-        <div class="container-fluid d-flex align-items-center justify-content-between">
-            <a class="navbar-brand fw-bold text-white" asp-controller="Jobs" asp-action="Index">
-                Job Portal
-            </a>
-
-
-            <ul class="navbar-nav d-flex flex-row align-items-center">
-                @* Phần Tất cả danh mục đã được chỉnh sửa thành dropdown *@
-                <li class="nav-item dropdown me-2">
-                    <a class="btn btn-outline-light dropdown-toggle" href="#" id="navbarCategoryDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        ☰ Tất cả danh mục
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarCategoryDropdown">
-                        @{
-                            // Lấy danh sách Categories từ ViewBag
-                            List<Job_Portal.Models.Category> categories = ViewBag.Categories as List<Job_Portal.Models.Category>;
-                        }
-                        @if (categories != null && categories.Any())
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
+            <div class="container-fluid d-flex align-items-center justify-content-between">
+                <a class="navbar-brand fw-bold text-white" asp-area="" asp-controller="Jobs" asp-action="Index">
+                    Job Portal
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                    <ul class="navbar-nav align-items-center">
+                        <li class="nav-item me-2">
+                            <a class="btn btn-outline-light" asp-area="" asp-controller="Employer" asp-action="Dashboard">👔 Nhà tuyển dụng</a>
+                        </li>
+                        @if (SignInManager.IsSignedIn(User))
                         {
-                            <li><h6 class="dropdown-header">Theo ngành nghề</h6></li>
-                            <li><a class="dropdown-item" asp-controller="Jobs" asp-action="Index">Tất cả ngành nghề</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            @foreach (var category in categories)
-                            {
-                                <li><a class="dropdown-item" asp-controller="Jobs" asp-action="Index" asp-route-categoryId="@category.Id">@category.Name</a></li>
-                            }
+                            // Lấy thông tin người dùng một lần để sử dụng cho cả debug và hiển thị
+                            var debugUser = await UserManager.GetUserAsync(User);
+                            string userFullName = debugUser?.FullName ?? "N/A"; // Xử lý trường hợp FullName null
+
+                            <li class="nav-item me-2">
+                                <span class="text-white">Debug: Đã đăng nhập: @(SignInManager.IsSignedIn(User) ? "True" : "False") - Tên: @userFullName</span>
+                            </li>
+                            <li class="nav-item dropdown me-2">
+                                <a class="btn btn-outline-light dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    👤 @(userFullName == "N/A" ? "Tài khoản" : userFullName) @* Sử dụng userFullName đã xử lý null *@
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">⚙ Quản lý tài khoản</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form method="post" asp-area="Identity" asp-page="/Account/Logout" class="dropdown-item">
+                                            <button type="submit" class="btn btn-link p-0 text-start">🚪 Đăng xuất</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item me-2">
+                                <a class="btn btn-outline-light" href="#">🔔</a>
+                            </li>
                         }
                         else
                         {
-                            <li><a class="dropdown-item" href="#">Không có danh mục nào</a></li>
+                            <li class="nav-item me-2">
+                                <span class="text-white">Debug: Chưa đăng nhập</span> @* Dòng debug cho trạng thái chưa đăng nhập *@
+                            </li>
+                            <li class="nav-item me-2">
+                                <a class="btn btn-outline-light" asp-area="Identity" asp-page="/Account/Login">🔐 Đăng nhập</a>
+                            </li>
+                            <li class="nav-item me-2">
+                                <a class="btn btn-outline-light" asp-area="Identity" asp-page="/Account/Register">📝 Đăng ký</a>
+                            </li>
                         }
                     </ul>
-                </li>
-                @* Kết thúc phần Tất cả danh mục *@
-
-                <li class="nav-item me-2">
-                    <a class="btn btn-outline-light" asp-controller="Employer" asp-action="Dashboard">👔 Nhà tuyển dụng</a> @* Đã sửa asp-action thành Dashboard *@
-                </li>
-                @if (SignInManager.IsSignedIn(User))
-                {
-                    var user = await UserManager.GetUserAsync(User);
-                    <li class="nav-item dropdown me-2">
-                        <a class="btn btn-outline-light dropdown-toggle" href="#" data-bs-toggle="dropdown">👤 @user.FullName</a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">⚙ Quản lý tài khoản</a></li>
-                            <li>
-                                <form method="post" asp-area="Identity" asp-page="/Account/Logout" class="dropdown-item">
-                                    <button type="submit" class="btn btn-link p-0 text-start">🚪 Đăng xuất</button>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item me-2">
-                        <a class="btn btn-outline-light" href="#">🔔</a>
-                    </li>
-                }
-                else
-                {
-                    <li class="nav-item me-2">
-                        <a class="btn btn-outline-light" asp-area="Identity" asp-page="/Account/Login">🔐 Đăng nhập</a>
-                    </li>
-                    <li class="nav-item me-2">
-                        <a class="btn btn-outline-light" asp-area="Identity" asp-page="/Account/Register">📝 Đăng ký</a>
-                    </li>
-                }
-            </ul>
-        </div>
-    </nav>
+                </div>
+            </div>
+        </nav>
+    </header>
 
     <div class="container mt-4">
-        @RenderBody()
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
     </div>
 
-    <footer class="text-center mt-5 mb-2 text-muted">
-        <p>&copy; @DateTime.Now.Year - Job Portal</p>
+    <footer class="border-top footer text-muted text-center mt-5">
+        <div class="container">
+            &copy; @DateTime.Now.Year - Job Portal - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    @RenderSection("Scripts", required: false)
+    <script src="~/js/site.js" asp-append-version="true"></script> @* Thêm liên kết đến file JS của bạn nếu có *@
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
