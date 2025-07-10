@@ -13,9 +13,11 @@
             max-width: 600px;
             flex-grow: 1;
         }
+
         .navbar-dark {
             background-color: #003366;
         }
+
         .form-control:focus {
             box-shadow: none;
         }
@@ -24,26 +26,42 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
         <div class="container-fluid d-flex align-items-center justify-content-between">
-            <a class="navbar-brand fw-bold text-white" asp-controller="Home" asp-action="Index">
+            <a class="navbar-brand fw-bold text-white" asp-controller="Jobs" asp-action="Index">
                 Job Portal
             </a>
 
-            <form class="d-flex search-bar me-3">
-                <input class="form-control me-2" type="search" placeholder="Tìm kiếm việc làm, công ty, kỹ năng" aria-label="Search" />
-                <select class="form-select me-2" style="width: 150px;">
-                    <option>Hồ Chí Minh</option>
-                    <option>Hà Nội</option>
-                    <option>Đà Nẵng</option>
-                </select>
-                <button class="btn btn-warning" type="submit">🔍</button>
-            </form>
 
             <ul class="navbar-nav d-flex flex-row align-items-center">
-                <li class="nav-item me-2">
-                    <a class="btn btn-outline-light" asp-controller="Category" asp-action="Index">☰ Tất cả danh mục</a>
+                @* Phần Tất cả danh mục đã được chỉnh sửa thành dropdown *@
+                <li class="nav-item dropdown me-2">
+                    <a class="btn btn-outline-light dropdown-toggle" href="#" id="navbarCategoryDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        ☰ Tất cả danh mục
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarCategoryDropdown">
+                        @{
+                            // Lấy danh sách Categories từ ViewBag
+                            List<Job_Portal.Models.Category> categories = ViewBag.Categories as List<Job_Portal.Models.Category>;
+                        }
+                        @if (categories != null && categories.Any())
+                        {
+                            <li><h6 class="dropdown-header">Theo ngành nghề</h6></li>
+                            <li><a class="dropdown-item" asp-controller="Jobs" asp-action="Index">Tất cả ngành nghề</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            @foreach (var category in categories)
+                            {
+                                <li><a class="dropdown-item" asp-controller="Jobs" asp-action="Index" asp-route-categoryId="@category.Id">@category.Name</a></li>
+                            }
+                        }
+                        else
+                        {
+                            <li><a class="dropdown-item" href="#">Không có danh mục nào</a></li>
+                        }
+                    </ul>
                 </li>
+                @* Kết thúc phần Tất cả danh mục *@
+
                 <li class="nav-item me-2">
-                    <a class="btn btn-outline-light" asp-controller="Employer" asp-action="Index">👔 Nhà tuyển dụng</a>
+                    <a class="btn btn-outline-light" asp-controller="Employer" asp-action="Dashboard">👔 Nhà tuyển dụng</a> @* Đã sửa asp-action thành Dashboard *@
                 </li>
                 @if (SignInManager.IsSignedIn(User))
                 {

@@ -1,39 +1,83 @@
-﻿@model IEnumerable<Job_Portal.Models.JobPosting>
-
+﻿@model List<Job_Portal.Models.JobPosting>
 @{
     ViewData["Title"] = "Danh sách công việc";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card p-3 mb-3" style="border: 1px solid #003366; border-radius: 8px;">
+                <h5 class="card-title text-primary fw-bold mb-3">Việc làm</h5>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><a href="@Url.Action("Index", "Jobs")" class="text-decoration-none text-dark">Việc làm mới nhất</a></li>
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-dark">Tìm việc làm</a></li>
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-dark">Việc làm quản lý</a></li>
+                </ul>
+            </div>
 
-<form asp-controller="Jobs" asp-action="Index" method="get">
-    <input type="text" name="search" placeholder="Tìm kiếm công việc..." />
-    <button type="submit">Tìm</button>
-</form>
+            <div class="card p-3 mb-3" style="border: 1px solid #003366; border-radius: 8px;">
+                <h5 class="card-title text-primary fw-bold mb-3">Việc của tôi</h5>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-dark">Việc đã lưu</a></li>
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-dark">Việc đã ứng tuyển</a></li>
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-dark">Thông báo việc làm</a></li>
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-dark">Việc dành cho bạn</a></li>
+                </ul>
+            </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Tiêu đề</th>
-            <th>Danh mục</th>
-            <th>Công ty</th>
-            <th>Ngày đăng</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var job in Model)
-        {
-            <tr>
-                <td>@job.Title</td>
-                <td>@job.Category?.Name</td>
-                <td>@job.Company?.Name</td>
-                <td>@job.PostedDate.ToShortDateString()</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@job.Id">Chi tiết</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-+
+            <div class="card p-3 mb-3" style="border: 1px solid #003366; border-radius: 8px;">
+                <h5 class="card-title text-primary fw-bold mb-3">Công ty</h5>
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><a href="#" class="text-decoration-none text-dark">Tất cả công ty</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <h2 class="mb-4">Danh sách công việc</h2>
+
+            <form asp-controller="Jobs" asp-action="Index" method="get" class="d-flex mb-4">
+                <input type="text" name="search" class="form-control me-2" placeholder="Tìm kiếm công việc..." aria-label="Tìm kiếm công việc">
+                <button type="submit" class="btn btn-primary">Tìm</button>
+            </form>
+
+            @if (Model != null && Model.Any())
+            {
+                <table class="table table-striped table-hover">
+                    <thead class="bg-primary text-white">
+                        <tr>
+                            <th>Tiêu đề</th>
+                            <th>Danh mục</th>
+                            <th>Công ty</th>
+                            <th>Ngày đăng</th>
+                            <th></th> @* Cột cho nút chi tiết *@
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var job in Model)
+                        {
+                            <tr>
+                                <td>@job.Title</td>
+                                <td>@job.Category.Name</td>
+                                <td>@job.Company.Name</td>
+                                <td>@job.PostedDate.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <a asp-controller="Jobs" asp-action="Details" asp-route-id="@job.Id" class="btn btn-sm btn-info">Chi tiết</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p class="alert alert-info">Không tìm thấy việc làm nào phù hợp.</p>
+            }
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+}

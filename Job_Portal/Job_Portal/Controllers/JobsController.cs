@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Job_Portal.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Job_Portal.Models; // Đảm bảo bạn có dòng này để truy cập các Models
 
 namespace Job_Portal.Controllers
 {
@@ -16,7 +17,7 @@ namespace Job_Portal.Controllers
         }
 
         // GET: /Jobs
-        public async Task<IActionResult> Index(string search)
+        public async Task<IActionResult> Index(string search, int? categoryId) // Thêm tham số categoryId
         {
             var jobs = _context.JobPostings
                 .Include(j => j.Category)
@@ -27,6 +28,15 @@ namespace Job_Portal.Controllers
             {
                 jobs = jobs.Where(j => j.Title.Contains(search) || j.Description.Contains(search));
             }
+
+            // Thêm điều kiện lọc theo CategoryId
+            if (categoryId.HasValue && categoryId.Value > 0)
+            {
+                jobs = jobs.Where(j => j.CategoryId == categoryId.Value);
+            }
+
+            // Truyền danh sách categories để hiển thị trên View và Layout
+            ViewBag.Categories = await _context.Categories.OrderBy(c => c.Name).ToListAsync();
 
             return View(await jobs.ToListAsync());
         }
