@@ -1,7 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Job_Portal.Models
 {
@@ -10,24 +9,28 @@ namespace Job_Portal.Models
         public int Id { get; set; }
 
         [Required]
-        [StringLength(100)]
+        [StringLength(150)]
         public string Title { get; set; }
 
-        public string Description { get; set; }
-        public DateTime PostedDate { get; set; } = DateTime.Now;
+        [StringLength(200)]
+        public string? Location { get; set; }
 
         [Required]
-        public int CategoryId { get; set; }
-        [ForeignKey("CategoryId")]
-        public Category Category { get; set; }
+        public DateTime PostedDate { get; set; } = DateTime.UtcNow;
 
+        public string? Description { get; set; } // <-- BỔ SUNG DÒNG NÀY
+
+        // Foreign Keys
+        public int? CategoryId { get; set; }
+        public int? CompanyId { get; set; }
         [Required]
-        public int CompanyId { get; set; }
-        [ForeignKey("CompanyId")]
-        public Company Company { get; set; }
+        public string UserId { get; set; } // Employer Id
 
-        public string UserId { get; set; }
-        [ForeignKey("UserId")]
-        public ApplicationUser Employer { get; set; }
+        // Navigation properties
+        public virtual Category Category { get; set; }
+        public virtual Company Company { get; set; }
+        public virtual ApplicationUser Employer { get; set; }
+
+        public virtual ICollection<JobApplication> Applications { get; set; } = new List<JobApplication>();
     }
 }

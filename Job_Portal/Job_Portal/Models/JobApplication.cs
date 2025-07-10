@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Job_Portal.Models
 {
@@ -10,15 +9,14 @@ namespace Job_Portal.Models
 
         [Required]
         public int JobPostingId { get; set; }
-        [ForeignKey("JobPostingId")]
-        public JobPosting JobPosting { get; set; }
 
         [Required]
-        public string UserId { get; set; }
-        [ForeignKey("UserId")]
-        public ApplicationUser JobSeeker { get; set; }
+        public string UserId { get; set; } // JobSeeker Id
 
-        public DateTime AppliedDate { get; set; } = DateTime.Now;
-        public string ResumeFilePath { get; set; }
+        public DateTime AppliedDate { get; set; } = DateTime.UtcNow;
+
+        // Navigation properties
+        public virtual JobPosting JobPosting { get; set; }
+        public virtual ApplicationUser JobSeeker { get; set; }
     }
 }

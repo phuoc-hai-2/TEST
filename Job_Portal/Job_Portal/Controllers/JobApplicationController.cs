@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using Job_Portal.Data;
 using Job_Portal.Models;
 using System.Threading.Tasks;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace Job_Portal.Controllers
 {
@@ -25,7 +27,8 @@ namespace Job_Portal.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
 
-            var alreadyApplied = _context.JobApplications.Any(a => a.JobPostingId == jobId && a.UserId == user.Id);
+            var alreadyApplied = await _context.JobApplications
+                .AnyAsync(a => a.JobPostingId == jobId && a.UserId == user.Id);
             if (alreadyApplied)
             {
                 TempData["Message"] = "Bạn đã ứng tuyển công việc này.";
@@ -36,8 +39,8 @@ namespace Job_Portal.Controllers
             {
                 JobPostingId = jobId,
                 UserId = user.Id,
-                AppliedDate = DateTime.Now,
-                ResumeFilePath = "" // Có thể thêm chức năng upload sau
+                AppliedDate = DateTime.UtcNow
+                // ResumeFilePath = "", // Thêm nếu bạn có property này
             };
 
             _context.JobApplications.Add(application);

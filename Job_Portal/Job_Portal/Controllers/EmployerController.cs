@@ -29,6 +29,7 @@ namespace Job_Portal.Controllers
                 .Where(j => j.UserId == user.Id)
                 .Include(j => j.Category)
                 .Include(j => j.Company)
+                .Include(j => j.Applications) // Để có thể dùng @job.Applications.Count trong View
                 .ToListAsync();
 
             return View(jobs);
@@ -51,7 +52,7 @@ namespace Job_Portal.Controllers
             {
                 var user = await _userManager.GetUserAsync(User);
                 job.UserId = user.Id;
-                job.PostedDate = DateTime.Now;
+                job.PostedDate = DateTime.UtcNow;
                 _context.JobPostings.Add(job);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Dashboard");
@@ -59,6 +60,19 @@ namespace Job_Portal.Controllers
 
             ViewBag.Categories = _context.Categories.ToList();
             ViewBag.Companies = _context.Companies.ToList();
+            return View(job);
+        }
+
+        // (Optional) Thêm action xem ứng viên của một tin tuyển dụng
+        public async Task<IActionResult> Applications(int id)
+        {
+            var job = await _context.JobPostings
+                .Include(j => j.Applications)
+                .ThenInclude(a => a.JobSeeker)
+                .FirstOrDefaultAsync(j => j.Id == id);
+
+            if (job == null) return NotFound();
+
             return View(job);
         }
     }

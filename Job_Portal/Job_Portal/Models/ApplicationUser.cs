@@ -9,12 +9,10 @@ namespace Job_Portal.Models
 
         public string? Skills { get; set; }
         public string? Qualifications { get; set; }
+        public string? CompanyName { get; set; } // Chỉ cho Employer
 
-        // *** THÊM THUỘC TÍNH MỚI CHO EMPLOYER ***
-        public string? CompanyName { get; set; }
-
-        public ICollection<JobApplication> JobApplications { get; set; }
-
-        public ICollection<JobPosting> JobPostings { get; set; }
+        // Navigation properties
+        public virtual ICollection<JobApplication> JobApplications { get; set; } = new List<JobApplication>();
+        public virtual ICollection<JobPosting> JobPostings { get; set; } = new List<JobPosting>();
     }
 }
