@@ -1,49 +1,44 @@
-﻿@model List<Job_Portal.Models.JobPosting>
+﻿@model IEnumerable<Job_Portal.Models.JobPosting>
 @{
-    ViewData["Title"] = "Dashboard - Quản lý tuyển dụng";
+    ViewData["Title"] = "Quản lý tin tuyển dụng";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-<div class="container-fluid py-4">
-    <h2 class="mb-4">Dashboard Nhà tuyển dụng</h2>
-    <a asp-action="Create" class="btn btn-primary mb-3">
-        <i class="fas fa-plus"></i> Đăng tin mới
-    </a>
-    @if (Model.Any())
+<div class="main-content-section">
+    <h2 class="mb-4" style="font-weight:700;">Tin tuyển dụng của bạn</h2>
+    <a asp-action="Create" class="btn btn-primary mb-3">+ Đăng tin mới</a>
+    @if (Model != null && Model.Any())
     {
         <div class="table-responsive">
-            <table class="table table-bordered table-hover">
-                <thead class="table-light">
+            <table class="table table-striped align-middle">
+                <thead>
                     <tr>
-                        <th>Tiêu đề công việc</th>
-                        <th>Danh mục</th>
-                        <th>Công ty</th>
+                        <th>Tiêu đề</th>
+                        <th>Vị trí</th>
                         <th>Địa điểm</th>
+                        <th>Mức lương</th>
                         <th>Ngày đăng</th>
+                        <th>Hạn nộp</th>
                         <th>Ứng viên</th>
-                        <th>Thao tác</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var job in Model.OrderByDescending(j => j.PostedDate))
+                    @foreach (var job in Model)
                     {
                         <tr>
                             <td>@job.Title</td>
-                            <td>@job.Category?.Name</td>
-                            <td>@job.Company?.Name</td>
-                            <td>@job.Location</td>
+                            <td>@job.Position</td>
+                            <td>@job.Workplace</td>
+                            <td>@job.Salary</td>
                             <td>@job.PostedDate.ToString("dd/MM/yyyy")</td>
+                            <td>@job.ApplicationDeadline.ToString("dd/MM/yyyy")</td>
                             <td>
-                                <a asp-action="Applications" asp-route-id="@job.Id" class="btn btn-sm btn-outline-success">
-                                    @job.Applications?.Count() ?? 0 ứng viên
+                                <a asp-action="Applications" asp-route-id="@job.Id" class="btn btn-outline-info btn-sm">
+                                    Xem ứng viên
                                 </a>
                             </td>
                             <td>
-                                <div class="btn-group">
-                                    <a asp-action="Details" asp-controller="Jobs" asp-route-id="@job.Id" class="btn btn-sm btn-info">Chi tiết</a>
-                                    <a asp-action="Edit" asp-route-id="@job.Id" class="btn btn-sm btn-warning">Sửa</a>
-                                    <!-- Xóa có thể làm thêm modal xác nhận nếu muốn -->
-                                </div>
+                                <a asp-action="Edit" asp-route-id="@job.Id" class="btn btn-warning btn-sm">Chỉnh sửa</a>
                             </td>
                         </tr>
                     }
@@ -53,8 +48,6 @@
     }
     else
     {
-        <div class="alert alert-info">
-            Bạn chưa có tin tuyển dụng nào. <a asp-action="Create">Đăng tin ngay!</a>
-        </div>
+        <div class="alert alert-info">Bạn chưa có tin tuyển dụng nào.</div>
     }
 </div>

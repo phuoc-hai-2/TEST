@@ -9,28 +9,27 @@ namespace Job_Portal.Models
         public int Id { get; set; }
 
         [Required]
-        [StringLength(150)]
         public string Title { get; set; }
 
-        [StringLength(200)]
-        public string? Location { get; set; }
+        public string Salary { get; set; }                     // Mức lương
+        public string JobType { get; set; }                    // Loại hình (Toàn thời gian,...)
+        public string Position { get; set; }                   // Vị trí/chức vụ
+        public string DegreeRequirement { get; set; }          // Bằng cấp
+        public string ExperienceRequirement { get; set; }      // Yêu cầu kinh nghiệm
+        public string AgeRequirement { get; set; }             // Độ tuổi
+        public string Industry { get; set; }                   // Ngành nghề
+        public string Specialty { get; set; }                  // Chuyên môn
+        public string Workplace { get; set; }                  // Địa điểm làm việc
+        public DateTime PostedDate { get; set; }               // Ngày đăng tuyển
+        public DateTime ApplicationDeadline { get; set; }      // Hạn nộp
+        public string Description { get; set; }                // Mô tả công việc (HTML hoặc plaintext)
 
-        [Required]
-        public DateTime PostedDate { get; set; } = DateTime.UtcNow;
-
-        public string? Description { get; set; } // <-- BỔ SUNG DÒNG NÀY
-
-        // Foreign Keys
         public int? CategoryId { get; set; }
+        public Category Category { get; set; }
         public int? CompanyId { get; set; }
-        [Required]
-        public string UserId { get; set; } // Employer Id
-
-        // Navigation properties
-        public virtual Category Category { get; set; }
-        public virtual Company Company { get; set; }
-        public virtual ApplicationUser Employer { get; set; }
-
-        public virtual ICollection<JobApplication> Applications { get; set; } = new List<JobApplication>();
+        public Company Company { get; set; }
+        public string UserId { get; set; }
+        public ApplicationUser Employer { get; set; }
+        public ICollection<JobApplication> Applications { get; set; } = new List<JobApplication>();
     }
 }

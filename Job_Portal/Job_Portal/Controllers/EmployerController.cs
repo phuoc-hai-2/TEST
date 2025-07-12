@@ -27,49 +27,120 @@ namespace Job_Portal.Controllers
             var user = await _userManager.GetUserAsync(User);
             var jobs = await _context.JobPostings
                 .Where(j => j.UserId == user.Id)
-                .Include(j => j.Category)
-                .Include(j => j.Company)
-                .Include(j => j.Applications) // Để có thể dùng @job.Applications.Count trong View
+                .OrderByDescending(j => j.PostedDate)
                 .ToListAsync();
 
             return View(jobs);
         }
 
         // GET: /Employer/Create
+        [HttpGet]
         public IActionResult Create()
         {
-            ViewBag.Categories = _context.Categories.ToList();
-            ViewBag.Companies = _context.Companies.ToList();
             return View();
         }
 
         // POST: /Employer/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(JobPosting job)
+        public async Task<IActionResult> Create(JobPosting model)
         {
             if (ModelState.IsValid)
             {
                 var user = await _userManager.GetUserAsync(User);
-                job.UserId = user.Id;
-                job.PostedDate = DateTime.UtcNow;
-                _context.JobPostings.Add(job);
+
+                // Nếu cần xử lý Category/Company động (nếu có)
+                // Nếu không dùng, có thể bỏ các đoạn này
+                Category category = null;
+                if (!string.IsNullOrWhiteSpace(model.Category?.Name))
+                {
+                    category = await _context.Categories.FirstOrDefaultAsync(c => c.Name == model.Category.Name);
+                    if (category == null)
+                    {
+                        category = new Category { Name = model.Category.Name };
+                        _context.Categories.Add(category);
+                        await _context.SaveChangesAsync();
+                    }
+                    model.CategoryId = category.Id;
+                }
+
+                Company company = null;
+                if (!string.IsNullOrWhiteSpace(model.Company?.Name))
+                {
+                    company = await _context.Companies.FirstOrDefaultAsync(c => c.Name == model.Company.Name);
+                    if (company == null)
+                    {
+                        company = new Company { Name = model.Company.Name };
+                        _context.Companies.Add(company);
+                        await _context.SaveChangesAsync();
+                    }
+                    model.CompanyId = company.Id;
+                }
+
+                model.UserId = user.Id;
+                model.PostedDate = DateTime.UtcNow;
+
+                _context.JobPostings.Add(model);
                 await _context.SaveChangesAsync();
+
                 return RedirectToAction("Dashboard");
             }
+            return View(model);
+        }
 
-            ViewBag.Categories = _context.Categories.ToList();
-            ViewBag.Companies = _context.Companies.ToList();
+        // GET: /Employer/Edit/5
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var job = await _context.JobPostings
+                .FirstOrDefaultAsync(j => j.Id == id && j.UserId == user.Id);
+            if (job == null) return NotFound();
             return View(job);
         }
 
-        // (Optional) Thêm action xem ứng viên của một tin tuyển dụng
+        // POST: /Employer/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, JobPosting model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var job = await _context.JobPostings
+                .FirstOrDefaultAsync(j => j.Id == id && j.UserId == user.Id);
+            if (job == null) return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                // Nếu cần xử lý category/company động thì thêm code như ở Create
+
+                job.Title = model.Title;
+                job.Salary = model.Salary;
+                job.JobType = model.JobType;
+                job.Position = model.Position;
+                job.DegreeRequirement = model.DegreeRequirement;
+                job.ExperienceRequirement = model.ExperienceRequirement;
+                job.AgeRequirement = model.AgeRequirement;
+                job.Industry = model.Industry;
+                job.Specialty = model.Specialty;
+                job.Workplace = model.Workplace;
+                job.ApplicationDeadline = model.ApplicationDeadline;
+                job.Description = model.Description;
+                // Không đổi PostedDate/UserId
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Dashboard");
+            }
+            return View(model);
+        }
+
+        // Xem ứng viên của một tin tuyển dụng
         public async Task<IActionResult> Applications(int id)
         {
+            var user = await _userManager.GetUserAsync(User);
             var job = await _context.JobPostings
                 .Include(j => j.Applications)
                 .ThenInclude(a => a.JobSeeker)
-                .FirstOrDefaultAsync(j => j.Id == id);
+                .FirstOrDefaultAsync(j => j.Id == id && j.UserId == user.Id);
 
             if (job == null) return NotFound();
 

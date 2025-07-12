@@ -2,27 +2,28 @@
 @inject SignInManager<Job_Portal.Models.ApplicationUser> SignInManager
 @inject UserManager<Job_Portal.Models.ApplicationUser> UserManager
 
+@{
+    var isSignedIn = SignInManager.IsSignedIn(User);
+    var isEmployer = User.IsInRole("Employer");
+    var isJobSeeker = User.IsInRole("JobSeeker");
+
+    var user = isSignedIn ? await UserManager.GetUserAsync(User) : null;
+    string currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    string currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+}
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Job Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <style>
-        .navbar-dark {
-            background-color: #003366;
-        }
-
-        .form-control:focus {
-            box-shadow: none;
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/Style.css" asp-append-version="true" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
+        <nav class="navbar navbar-expand-lg navbar-dark shadow-sm main-navbar">
             <div class="container-fluid d-flex align-items-center justify-content-between">
                 <a class="navbar-brand fw-bold text-white" asp-area="" asp-controller="Jobs" asp-action="Index">
                     Job Portal
@@ -33,92 +34,63 @@
                 </button>
                 <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                     <ul class="navbar-nav align-items-center">
-                        <li class="nav-item me-2">
-                            <a class="btn btn-outline-light" asp-area="" asp-controller="Employer" asp-action="Dashboard">
-                                👔 Nhà tuyển dụng
-                            </a>
-                        </li>
-                        <li class="nav-item me-2">
-                            <a class="btn btn-outline-light" asp-area="" asp-controller="Jobs" asp-action="Index">
-                                💼 Việc làm
-                            </a>
-                        </li>
-                        <li class="nav-item me-2">
-                            <a class="btn btn-outline-light" asp-area="" asp-controller="Employer" asp-action="Dashboard">
-                                🏢 Công ty
-                            </a>
-                        </li>
-                        @{
-                            var isSignedIn = SignInManager.IsSignedIn(User);
-                            Job_Portal.Models.ApplicationUser user = null;
-                            if (isSignedIn)
-                            {
-                                user = await UserManager.GetUserAsync(User);
-                            }
-                        }
                         @if (isSignedIn)
                         {
+                            <li class="nav-item me-2">
+                                <span class="text-white fw-bold">Xin chào, @user?.FullName</span>
+                            </li>
+                            @if (isJobSeeker)
+                            {
+                                <li class="nav-item me-2">
+                                    <a class="btn btn-outline-light @(currentController == "JobApplication" ? "active" : "")" asp-area="" asp-controller="JobApplication" asp-action="Index">
+                                        <span role="img" aria-label="envelope">📨</span> Việc đã ứng tuyển
+                                    </a>
+                                </li>
+                            }
+                            @if (isEmployer)
+                            {
+                                <li class="nav-item me-2">
+                                    <a class="btn btn-outline-light @(currentController == "Employer" && currentAction == "Dashboard" ? "active" : "")"
+                                       asp-area="" asp-controller="Employer" asp-action="Dashboard">
+                                        <span role="img" aria-label="tie">👔</span> Quản lý tin tuyển dụng
+                                    </a>
+                                </li>
+                                <li class="nav-item me-2">
+                                    <a class="btn btn-outline-light @(currentController == "Employer" && currentAction == "Create" ? "active" : "")"
+                                       asp-area="" asp-controller="Employer" asp-action="Create">
+                                        <span role="img" aria-label="plus">➕</span> Đăng tin mới
+                                    </a>
+                                </li>
+                            }
                             <li class="nav-item dropdown me-2">
-                                <a class="nav-link dropdown-toggle text-white px-3"
-                                   href="#"
-                                   id="userDropdown"
-                                   role="button"
-                                   data-bs-toggle="dropdown"
-                                   aria-expanded="false">
-                                    👤 @user?.FullName
+                                <a class="nav-link dropdown-toggle text-white px-3" href="#" id="userDropdown" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    <span role="img" aria-label="gear">⚙</span> Tài khoản
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                     <li>
                                         <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">
-                                            ⚙ Quản lý tài khoản
+                                            Quản lý tài khoản
                                         </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" asp-area="" asp-controller="JobApplication" asp-action="Apply">
-                                            📨 Việc đã ứng tuyển
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" asp-area="" asp-controller="Jobs" asp-action="Saved">
-                                            ⭐ Việc đã lưu
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" asp-area="" asp-controller="Jobs" asp-action="Recommend">
-                                            🎯 Việc dành cho bạn
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" asp-area="" asp-controller="Jobs" asp-action="Notifications">
-                                            🔔 Thông báo việc làm
-                                        </a>
-                                    </li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
                                         <form method="post" asp-area="Identity" asp-page="/Account/Logout" class="m-0 p-0">
                                             <button type="submit" class="dropdown-item btn btn-link p-0 text-start">
-                                                🚪 Đăng xuất
+                                                Đăng xuất
                                             </button>
                                         </form>
                                     </li>
                                 </ul>
-                            </li>
-                            <li class="nav-item me-2">
-                                <a class="btn btn-outline-light" asp-area="" asp-controller="Notifications" asp-action="Index">
-                                    <span role="img" aria-label="bell">🔔</span>
-                                </a>
                             </li>
                         }
                         else
                         {
                             <li class="nav-item me-2">
                                 <a class="btn btn-outline-light" asp-area="Identity" asp-page="/Account/Login">
-                                    🔐 Đăng nhập
+                                    <span role="img" aria-label="lock">🔐</span> Đăng nhập
                                 </a>
                             </li>
                             <li class="nav-item me-2">
                                 <a class="btn btn-outline-light" asp-area="Identity" asp-page="/Account/Register">
-                                    📝 Đăng ký
+                                    <span role="img" aria-label="register">📝</span> Đăng ký
                                 </a>
                             </li>
                         }
@@ -127,10 +99,53 @@
             </div>
         </nav>
     </header>
-    <div class="container mt-4">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+
+    <div class="container custom-bg mt-4">
+        <div class="row flex-lg-nowrap">
+            <div class="col-lg-3 mb-4">
+                <aside class="sidebar">
+                    <div class="sidebar-section">
+                        <h5>Việc làm</h5>
+                        <ul>
+                            <li><a asp-area="" asp-controller="Jobs" asp-action="Index">Việc làm mới nhất</a></li>
+                        </ul>
+                    </div>
+                    @if (isSignedIn && isJobSeeker)
+                    {
+                        <div class="sidebar-section">
+                            <h5>Việc của tôi</h5>
+                            <ul>
+                                <li>
+                                    <a class="@(currentController == "JobApplication" ? "active-link" : "")"
+                                       asp-area="" asp-controller="JobApplication" asp-action="Index">Việc đã ứng tuyển</a>
+                                </li>
+                            </ul>
+                        </div>
+                    }
+                    @if (isSignedIn && isEmployer)
+                    {
+                        <div class="sidebar-section">
+                            <h5>Quản lý tuyển dụng</h5>
+                            <ul>
+                                <li>
+                                    <a class="@(currentController == "Employer" && currentAction == "Dashboard" ? "active-link" : "")"
+                                       asp-area="" asp-controller="Employer" asp-action="Dashboard">Danh sách tin tuyển dụng</a>
+                                </li>
+                                <li>
+                                    <a class="@(currentController == "Employer" && currentAction == "Create" ? "active-link" : "")"
+                                       asp-area="" asp-controller="Employer" asp-action="Create">Đăng tin mới</a>
+                                </li>
+                            </ul>
+                        </div>
+                    }
+                </aside>
+            </div>
+            <div class="col-lg-9">
+                <main role="main" class="pb-3">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

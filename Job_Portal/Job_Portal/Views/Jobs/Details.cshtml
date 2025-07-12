@@ -1,30 +1,53 @@
 ﻿@model Job_Portal.Models.JobPosting
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
 @{
     ViewData["Title"] = "Chi tiết công việc";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    var isJobSeeker = User.IsInRole("JobSeeker");
 }
-
-<div class="container py-4">
-    <h2>@Model.Title</h2>
-    <p>
-        <strong>Danh mục:</strong> @Model.Category?.Name <br />
-        <strong>Công ty:</strong> @Model.Company?.Name <br />
-        <strong>Địa điểm:</strong> @Model.Location <br />
-        <strong>Ngày đăng:</strong> @Model.PostedDate.ToString("dd/MM/yyyy") <br />
-    </p>
-    <hr />
-    <div>
-        <h5>Mô tả công việc</h5>
-        <p>@Model.Description</p>
+<div class="main-content-section px-4 py-3 mb-4" style="border-radius:18px;">
+    <h2 style="font-weight:800;font-size:2rem;">@Model.Title</h2>
+    <div class="mb-2 d-flex flex-wrap gap-3">
+        <span><i class="bi bi-cash"></i> <b>Mức lương:</b> <span style="color:#0061d4">@Model.Salary</span></span>
+        <span><i class="bi bi-calendar"></i> <b>Hạn nộp:</b> @Model.ApplicationDeadline.ToString("dd/MM/yyyy")</span>
+        <span><i class="bi bi-geo-alt"></i> <b>Địa điểm:</b> @Model.Workplace</span>
     </div>
-    <hr />
-    <form asp-controller="JobApplication" asp-action="Apply" method="post">
-        <input type="hidden" name="jobId" value="@Model.Id" />
-        <button type="submit" class="btn btn-success">Ứng tuyển ngay</button>
-        <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
-    </form>
-    @if (TempData["Message"] != null)
+
+    @if (TempData["ApplyMessage"] != null)
     {
-        <div class="alert alert-info mt-3">@TempData["Message"]</div>
+        <div class="alert alert-info">@TempData["ApplyMessage"]</div>
     }
+
+    @if (isJobSeeker)
+    {
+        <form asp-controller="JobApplication" asp-action="Create" method="post" class="d-inline">
+            <input type="hidden" name="jobId" value="@Model.Id" />
+            <button type="submit" class="btn btn-primary btn-lg px-4">Ứng tuyển ngay</button>
+        </form>
+    }
+
+    <div class="bg-white rounded p-4 mb-4" style="box-shadow:0 1px 6px rgba(0,0,0,0.05);">
+        <h5 style="font-weight:700;">Thông Tin Chung</h5>
+        <div class="row mb-2">
+            <div class="col-md-4"><b>Loại hình:</b> @Model.JobType</div>
+            <div class="col-md-4"><b>Vị trí/chức vụ:</b> @Model.Position</div>
+            <div class="col-md-4"><b>Bằng cấp:</b> @Model.DegreeRequirement</div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-md-4"><b>Ngày đăng tuyển:</b> @Model.PostedDate.ToString("dd/MM/yyyy")</div>
+            <div class="col-md-4"><b>Kinh nghiệm:</b> @Model.ExperienceRequirement</div>
+            <div class="col-md-4"><b>Độ tuổi:</b> @Model.AgeRequirement</div>
+        </div>
+        <div class="mb-2"><b>Ngành nghề:</b> @Model.Industry</div>
+        <div class="mb-2"><b>Chuyên môn:</b> @Model.Specialty</div>
+        <div class="mb-2"><b>Địa điểm làm việc:</b> @Model.Workplace</div>
+        <div class="mb-2"><b>Công ty:</b> @Model.Company?.Name</div>
+    </div>
+    <div class="bg-white rounded p-4" style="box-shadow:0 1px 6px rgba(0,0,0,0.05);">
+        <h5 style="font-weight:700;">Chi Tiết Công Việc</h5>
+        <div>
+            <b>Mô Tả Công Việc:</b>
+            <div>@Html.Raw(Model.Description)</div>
+        </div>
+    </div>
 </div>

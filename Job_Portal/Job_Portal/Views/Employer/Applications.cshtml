@@ -3,10 +3,12 @@
     ViewData["Title"] = "Danh sách ứng viên";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
-<div class="container py-4">
-    <h2>Ứng viên cho: @Model.Title</h2>
-    <p><strong>Địa điểm:</strong> @Model.Location | <strong>Ngày đăng:</strong> @Model.PostedDate.ToString("dd/MM/yyyy")</p>
+<div class="main-content-section">
+    <h2 class="mb-4" style="font-weight:700;">Ứng viên cho: @Model.Title</h2>
+    <p>
+        <strong>Địa điểm:</strong> @Model.Workplace |
+        <strong>Ngày đăng:</strong> @Model.PostedDate.ToString("dd/MM/yyyy")
+    </p>
     @if (Model.Applications != null && Model.Applications.Any())
     {
         <table class="table table-bordered">

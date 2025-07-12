@@ -1,0 +1,45 @@
+﻿@model List<Job_Portal.Models.JobApplication>
+@{
+    ViewData["Title"] = "Việc đã ứng tuyển";
+}
+<div class="main-content-section">
+    <h2 class="mb-4" style="font-weight:700;">Các công việc bạn đã ứng tuyển</h2>
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th>Tiêu đề</th>
+                        <th>Vị trí</th>
+                        <th>Địa điểm</th>
+                        <th>Mức lương</th>
+                        <th>Hạn nộp</th>
+                        <th>Ngày ứng tuyển</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var app in Model)
+                    {
+                        <tr>
+                            <td>@app.JobPosting?.Title</td>
+                            <td>@app.JobPosting?.Position</td>
+                            <td>@app.JobPosting?.Workplace</td>
+                            <td>@app.JobPosting?.Salary</td>
+                            <td>@app.JobPosting?.ApplicationDeadline.ToString("dd/MM/yyyy")</td>
+                            <td>@app.AppliedDate.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <a asp-controller="Jobs" asp-action="Details" asp-route-id="@app.JobPostingId" class="btn btn-info btn-sm">Xem chi tiết</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">Bạn chưa ứng tuyển công việc nào.</div>
+    }
+</div>

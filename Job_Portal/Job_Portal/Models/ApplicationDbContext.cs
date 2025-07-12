@@ -31,7 +31,7 @@ namespace Job_Portal.Data
             builder.Entity<JobApplication>()
                 .HasOne(a => a.JobSeeker)
                 .WithMany(u => u.JobApplications)
-                .HasForeignKey(a => a.UserId)
+                .HasForeignKey(a => a.JobSeekerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // JobApplication - JobPosting (1-n)

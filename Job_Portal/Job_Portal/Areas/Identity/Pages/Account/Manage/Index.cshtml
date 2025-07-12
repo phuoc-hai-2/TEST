@@ -1,7 +1,10 @@
 ﻿@page
 @model IndexModel
+@using Microsoft.AspNetCore.Identity
 @{
     ViewData["Title"] = "Quản lý tài khoản";
+    var isEmployer = User.IsInRole("Employer");
+    var isJobSeeker = User.IsInRole("JobSeeker");
 }
 
 <div class="row justify-content-center">
@@ -38,27 +41,35 @@
                             <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
                         </div>
                     </div>
-                    <div class="mb-3 row">
-                        <label asp-for="Input.Skills" class="col-sm-3 col-form-label"></label>
-                        <div class="col-sm-9">
-                            <input asp-for="Input.Skills" class="form-control" />
-                            <span asp-validation-for="Input.Skills" class="text-danger"></span>
+                    @* Hiện các trường dành riêng cho JobSeeker *@
+                    @if (isJobSeeker)
+                    {
+                        <div class="mb-3 row">
+                            <label asp-for="Input.Skills" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <input asp-for="Input.Skills" class="form-control" />
+                                <span asp-validation-for="Input.Skills" class="text-danger"></span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label asp-for="Input.Qualifications" class="col-sm-3 col-form-label"></label>
-                        <div class="col-sm-9">
-                            <textarea asp-for="Input.Qualifications" class="form-control" rows="2"></textarea>
-                            <span asp-validation-for="Input.Qualifications" class="text-danger"></span>
+                        <div class="mb-3 row">
+                            <label asp-for="Input.Qualifications" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <textarea asp-for="Input.Qualifications" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Input.Qualifications" class="text-danger"></span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label asp-for="Input.CompanyName" class="col-sm-3 col-form-label"></label>
-                        <div class="col-sm-9">
-                            <input asp-for="Input.CompanyName" class="form-control" />
-                            <span asp-validation-for="Input.CompanyName" class="text-danger"></span>
+                    }
+                    @* Hiện trường dành riêng cho Employer *@
+                    @if (isEmployer)
+                    {
+                        <div class="mb-3 row">
+                            <label asp-for="Input.CompanyName" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
+                                <input asp-for="Input.CompanyName" class="form-control" />
+                                <span asp-validation-for="Input.CompanyName" class="text-danger"></span>
+                            </div>
                         </div>
-                    </div>
+                    }
                     <div class="d-grid">
                         <button type="submit" class="btn btn-primary btn-lg">
                             Lưu thay đổi

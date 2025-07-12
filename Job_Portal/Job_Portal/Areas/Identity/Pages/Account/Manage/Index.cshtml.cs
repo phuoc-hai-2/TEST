@@ -1,8 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-#nullable disable
-
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Job_Portal.Models;
 using Microsoft.AspNetCore.Identity;
@@ -108,9 +104,18 @@ namespace Job_Portal.Areas.Identity.Pages.Account.Manage
             }
 
             user.FullName = Input.FullName;
-            user.Skills = Input.Skills;
-            user.Qualifications = Input.Qualifications;
-            user.CompanyName = Input.CompanyName;
+
+            // Chỉ cập nhật Skills và Qualifications cho JobSeeker
+            if (User.IsInRole("JobSeeker"))
+            {
+                user.Skills = Input.Skills;
+                user.Qualifications = Input.Qualifications;
+            }
+            // Chỉ cập nhật CompanyName cho Employer
+            if (User.IsInRole("Employer"))
+            {
+                user.CompanyName = Input.CompanyName;
+            }
 
             var updateResult = await _userManager.UpdateAsync(user);
             if (!updateResult.Succeeded)
