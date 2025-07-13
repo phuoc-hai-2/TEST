@@ -7,6 +7,8 @@
     <div class="row row-cols-1 row-cols-md-2 g-4">
         @foreach (var job in Model)
         {
+            var isExpired = job.ApplicationDeadline < DateTime.UtcNow;
+            var isClosed = job.IsClosed;
             <div class="col">
                 <div class="job-card">
                     <div class="job-title">@job.Title</div>
@@ -18,7 +20,24 @@
                         <b>Vị trí:</b> @job.Position
                         <span class="ms-3"><b>Loại hình:</b> @job.JobType</span>
                     </div>
-                    <div class="job-info"><b>Hạn nộp:</b> @job.ApplicationDeadline.ToString("dd/MM/yyyy")</div>
+                    <div class="job-info">
+                        <b>Hạn nộp:</b> @job.ApplicationDeadline.ToString("dd/MM/yyyy")
+                        <span class="ms-3">
+                            <b>Trạng thái:</b>
+                            @if (isClosed)
+                            {
+                                <span class="badge bg-danger">Đã đóng</span>
+                            }
+                            else if (isExpired)
+                            {
+                                <span class="badge bg-warning text-dark">Hết hạn</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Mở ứng tuyển</span>
+                            }
+                        </span>
+                    </div>
                     <a asp-action="Details" asp-route-id="@job.Id" class="btn btn-primary btn-sm mt-2">Xem chi tiết</a>
                 </div>
             </div>

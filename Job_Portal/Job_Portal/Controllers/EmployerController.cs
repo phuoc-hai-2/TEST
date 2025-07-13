@@ -45,46 +45,40 @@ namespace Job_Portal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(JobPosting model)
         {
+            var categoryName = Request.Form["Category.Name"].ToString();
+            if (!string.IsNullOrWhiteSpace(categoryName))
+            {
+                var category = await _context.Categories.FirstOrDefaultAsync(c => c.Name == categoryName);
+                if (category == null)
+                {
+                    category = new Category { Name = categoryName };
+                    _context.Categories.Add(category);
+                    await _context.SaveChangesAsync();
+                }
+                model.CategoryId = category.Id;
+            }
+
+            model.PostedDate = DateTime.UtcNow;
+
+            // In ModelState lỗi ra Output
+            foreach (var key in ModelState.Keys)
+            {
+                var errors = ModelState[key].Errors;
+                foreach (var error in errors)
+                {
+                    Console.WriteLine($"{key}: {error.ErrorMessage}");
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 var user = await _userManager.GetUserAsync(User);
-
-                // Nếu cần xử lý Category/Company động (nếu có)
-                // Nếu không dùng, có thể bỏ các đoạn này
-                Category category = null;
-                if (!string.IsNullOrWhiteSpace(model.Category?.Name))
-                {
-                    category = await _context.Categories.FirstOrDefaultAsync(c => c.Name == model.Category.Name);
-                    if (category == null)
-                    {
-                        category = new Category { Name = model.Category.Name };
-                        _context.Categories.Add(category);
-                        await _context.SaveChangesAsync();
-                    }
-                    model.CategoryId = category.Id;
-                }
-
-                Company company = null;
-                if (!string.IsNullOrWhiteSpace(model.Company?.Name))
-                {
-                    company = await _context.Companies.FirstOrDefaultAsync(c => c.Name == model.Company.Name);
-                    if (company == null)
-                    {
-                        company = new Company { Name = model.Company.Name };
-                        _context.Companies.Add(company);
-                        await _context.SaveChangesAsync();
-                    }
-                    model.CompanyId = company.Id;
-                }
-
                 model.UserId = user.Id;
-                model.PostedDate = DateTime.UtcNow;
-
                 _context.JobPostings.Add(model);
                 await _context.SaveChangesAsync();
-
                 return RedirectToAction("Dashboard");
             }
+
             return View(model);
         }
 
@@ -109,10 +103,36 @@ namespace Job_Portal.Controllers
                 .FirstOrDefaultAsync(j => j.Id == id && j.UserId == user.Id);
             if (job == null) return NotFound();
 
+            // Lấy tên category và company nhập từ form (nếu có)
+            var categoryName = Request.Form["Category.Name"].ToString();
+            var companyName = Request.Form["Company.Name"].ToString();
+
+            if (!string.IsNullOrWhiteSpace(categoryName))
+            {
+                var category = await _context.Categories.FirstOrDefaultAsync(c => c.Name == categoryName);
+                if (category == null)
+                {
+                    category = new Category { Name = categoryName };
+                    _context.Categories.Add(category);
+                    await _context.SaveChangesAsync();
+                }
+                job.CategoryId = category.Id;
+            }
+
+            if (!string.IsNullOrWhiteSpace(companyName))
+            {
+                var company = await _context.Companies.FirstOrDefaultAsync(c => c.Name == companyName);
+                if (company == null)
+                {
+                    company = new Company { Name = companyName };
+                    _context.Companies.Add(company);
+                    await _context.SaveChangesAsync();
+                }
+                job.CompanyId = company.Id;
+            }
+
             if (ModelState.IsValid)
             {
-                // Nếu cần xử lý category/company động thì thêm code như ở Create
-
                 job.Title = model.Title;
                 job.Salary = model.Salary;
                 job.JobType = model.JobType;

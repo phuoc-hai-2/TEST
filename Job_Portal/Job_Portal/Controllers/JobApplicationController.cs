@@ -41,7 +41,18 @@ namespace Job_Portal.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
             var job = await _context.JobPostings.FindAsync(jobId);
-            if (job == null) return NotFound();
+            if (job == null)
+            {
+                TempData["ApplyMessage"] = "Công việc không tồn tại.";
+                return RedirectToAction("Index", "Jobs");
+            }
+
+            // Kiểm tra trạng thái job posting
+            if (job.IsClosed || job.ApplicationDeadline < DateTime.UtcNow)
+            {
+                TempData["ApplyMessage"] = "Công việc đã đóng hoặc hết hạn ứng tuyển.";
+                return RedirectToAction("Details", "Jobs", new { id = jobId });
+            }
 
             // Kiểm tra đã ứng tuyển chưa
             bool alreadyApplied = await _context.JobApplications
