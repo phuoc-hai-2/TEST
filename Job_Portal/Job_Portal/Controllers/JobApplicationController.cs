@@ -47,14 +47,12 @@ namespace Job_Portal.Controllers
                 return RedirectToAction("Index", "Jobs");
             }
 
-            // Kiểm tra trạng thái job posting
             if (job.IsClosed || job.ApplicationDeadline < DateTime.UtcNow)
             {
                 TempData["ApplyMessage"] = "Công việc đã đóng hoặc hết hạn ứng tuyển.";
                 return RedirectToAction("Details", "Jobs", new { id = jobId });
             }
 
-            // Kiểm tra đã ứng tuyển chưa
             bool alreadyApplied = await _context.JobApplications
                 .AnyAsync(a => a.JobPostingId == jobId && a.JobSeekerId == user.Id);
             if (alreadyApplied)

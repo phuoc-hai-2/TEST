@@ -60,7 +60,6 @@ namespace Job_Portal.Controllers
 
             model.PostedDate = DateTime.UtcNow;
 
-            // In ModelState lỗi ra Output
             foreach (var key in ModelState.Keys)
             {
                 var errors = ModelState[key].Errors;
@@ -82,7 +81,6 @@ namespace Job_Portal.Controllers
             return View(model);
         }
 
-        // GET: /Employer/Edit/5
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
@@ -103,7 +101,6 @@ namespace Job_Portal.Controllers
                 .FirstOrDefaultAsync(j => j.Id == id && j.UserId == user.Id);
             if (job == null) return NotFound();
 
-            // Lấy tên category và company nhập từ form (nếu có)
             var categoryName = Request.Form["Category.Name"].ToString();
             var companyName = Request.Form["Company.Name"].ToString();
 
@@ -145,7 +142,6 @@ namespace Job_Portal.Controllers
                 job.Workplace = model.Workplace;
                 job.ApplicationDeadline = model.ApplicationDeadline;
                 job.Description = model.Description;
-                // Không đổi PostedDate/UserId
 
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Dashboard");
@@ -153,7 +149,6 @@ namespace Job_Portal.Controllers
             return View(model);
         }
 
-        // Xem ứng viên của một tin tuyển dụng
         public async Task<IActionResult> Applications(int id)
         {
             var user = await _userManager.GetUserAsync(User);

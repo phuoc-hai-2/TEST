@@ -52,12 +52,10 @@ namespace Job_Portal.Data
                 .HasForeignKey(j => j.CompanyId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-            // Cấu hình kiểu cột Salary
             builder.Entity<JobPosting>()
                 .Property(j => j.Salary)
                 .HasColumnType("decimal(18,2)");
 
-            // Seed data cho Category, Company
             builder.Entity<Category>().HasData(
                 new Category { Id = 1, Name = "IT" },
                 new Category { Id = 2, Name = "Finance" },

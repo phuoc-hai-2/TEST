@@ -57,7 +57,6 @@ namespace Job_Portal.Models
 
         public bool IsClosed { get; set; } = false;
 
-        // Navigation
         public int? CategoryId { get; set; }
         public virtual Category? Category { get; set; }
         public int? CompanyId { get; set; }

@@ -9,9 +9,8 @@ namespace Job_Portal.Models
 
         public string? Skills { get; set; }
         public string? Qualifications { get; set; }
-        public string? CompanyName { get; set; } // Chỉ cho Employer
+        public string? CompanyName { get; set; }
 
-        // Navigation properties
         public virtual ICollection<JobApplication> JobApplications { get; set; } = new List<JobApplication>();
         public virtual ICollection<JobPosting> JobPostings { get; set; } = new List<JobPosting>();
     }

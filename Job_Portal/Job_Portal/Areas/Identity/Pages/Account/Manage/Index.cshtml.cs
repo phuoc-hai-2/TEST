@@ -105,13 +105,11 @@ namespace Job_Portal.Areas.Identity.Pages.Account.Manage
 
             user.FullName = Input.FullName;
 
-            // Chỉ cập nhật Skills và Qualifications cho JobSeeker
             if (User.IsInRole("JobSeeker"))
             {
                 user.Skills = Input.Skills;
                 user.Qualifications = Input.Qualifications;
             }
-            // Chỉ cập nhật CompanyName cho Employer
             if (User.IsInRole("Employer"))
             {
                 user.CompanyName = Input.CompanyName;

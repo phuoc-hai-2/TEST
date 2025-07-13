@@ -41,7 +41,6 @@
                             <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
                         </div>
                     </div>
-                    @* Hiện các trường dành riêng cho JobSeeker *@
                     @if (isJobSeeker)
                     {
                         <div class="mb-3 row">
@@ -59,7 +58,6 @@
                             </div>
                         </div>
                     }
-                    @* Hiện trường dành riêng cho Employer *@
                     @if (isEmployer)
                     {
                         <div class="mb-3 row">
