@@ -11,9 +11,12 @@ namespace Job_Portal.Models
         [StringLength(100)]
         public string Name { get; set; }
 
-        public string Description { get; set; }
-        public string Website { get; set; }
+        [StringLength(500)]
+        public string? Description { get; set; }
 
-        public ICollection<JobPosting> JobPostings { get; set; }
+        [StringLength(100)]
+        public string? Website { get; set; }
+
+        public virtual ICollection<JobPosting> JobPostings { get; set; } = new List<JobPosting>();
     }
 }

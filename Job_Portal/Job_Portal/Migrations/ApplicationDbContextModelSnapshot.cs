@@ -115,7 +115,24 @@ namespace Job_Portal.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "IT"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Finance"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Education"
+                        });
                 });
 
             modelBuilder.Entity("Job_Portal.Models.Company", b =>
@@ -127,8 +144,8 @@ namespace Job_Portal.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -136,12 +153,35 @@ namespace Job_Portal.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Website")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Companies", (string)null);
+                    b.ToTable("Companies");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "Tech company",
+                            Name = "Microsoft",
+                            Website = "https://microsoft.com"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Banking",
+                            Name = "Vietcombank",
+                            Website = "https://vietcombank.com.vn"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "IT services",
+                            Name = "FPT",
+                            Website = "https://fpt.com.vn"
+                        });
                 });
 
             modelBuilder.Entity("Job_Portal.Models.JobApplication", b =>
@@ -158,11 +198,7 @@ namespace Job_Portal.Migrations
                     b.Property<int>("JobPostingId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ResumeFilePath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
+                    b.Property<string>("JobSeekerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -170,9 +206,9 @@ namespace Job_Portal.Migrations
 
                     b.HasIndex("JobPostingId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("JobSeekerId");
 
-                    b.ToTable("JobApplications", (string)null);
+                    b.ToTable("JobApplications");
                 });
 
             modelBuilder.Entity("Job_Portal.Models.JobPosting", b =>
@@ -183,27 +219,76 @@ namespace Job_Portal.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoryId")
+                    b.Property<string>("AgeRequirement")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("ApplicationDeadline")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CompanyId")
+                    b.Property<int?>("CompanyId")
                         .HasColumnType("int");
+
+                    b.Property<string>("DegreeRequirement")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("PostedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Title")
+                    b.Property<string>("ExperienceRequirement")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("Industry")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsClosed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("JobType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Position")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("PostedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Salary")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Specialty")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Workplace")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -213,7 +298,7 @@ namespace Job_Portal.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("JobPostings", (string)null);
+                    b.ToTable("JobPostings");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -352,14 +437,14 @@ namespace Job_Portal.Migrations
             modelBuilder.Entity("Job_Portal.Models.JobApplication", b =>
                 {
                     b.HasOne("Job_Portal.Models.JobPosting", "JobPosting")
-                        .WithMany()
+                        .WithMany("Applications")
                         .HasForeignKey("JobPostingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Job_Portal.Models.ApplicationUser", "JobSeeker")
                         .WithMany("JobApplications")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("JobSeekerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -373,14 +458,12 @@ namespace Job_Portal.Migrations
                     b.HasOne("Job_Portal.Models.Category", "Category")
                         .WithMany("JobPostings")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Job_Portal.Models.Company", "Company")
                         .WithMany("JobPostings")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Job_Portal.Models.ApplicationUser", "Employer")
                         .WithMany("JobPostings")
@@ -461,6 +544,11 @@ namespace Job_Portal.Migrations
             modelBuilder.Entity("Job_Portal.Models.Company", b =>
                 {
                     b.Navigation("JobPostings");
+                });
+
+            modelBuilder.Entity("Job_Portal.Models.JobPosting", b =>
+                {
+                    b.Navigation("Applications");
                 });
 #pragma warning restore 612, 618
         }

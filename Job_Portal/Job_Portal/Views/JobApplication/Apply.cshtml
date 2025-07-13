@@ -1,0 +1,14 @@
+﻿@model Job_Portal.Models.JobPosting
+@{
+    ViewData["Title"] = "Ứng tuyển công việc";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-4">
+    <h2>Ứng tuyển: @Model.Title</h2>
+    <form asp-action="Apply" method="post">
+        <input type="hidden" name="jobId" value="@Model.Id" />
+        <button type="submit" class="btn btn-success">Xác nhận ứng tuyển</button>
+        <a asp-controller="Jobs" asp-action="Index" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>

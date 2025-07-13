@@ -2,7 +2,6 @@
 @model RegisterModel
 @{
     ViewData["Title"] = "Register";
-    // Thêm một lựa chọn mặc định để người dùng buộc phải chọn
     var roles = new List<SelectListItem>
     {
         new SelectListItem { Value = "", Text = "--- Please select your role ---" },
@@ -58,7 +57,6 @@
                         <span asp-validation-for="Input.Role" class="text-danger"></span>
                     </div>
 
-                    <!-- Các trường chỉ dành cho Job Seeker -->
                     <div id="jobSeekerFields" style="display: none;">
                         <div class="form-floating mb-3">
                             <input asp-for="Input.Skills" class="form-control" placeholder="e.g. C#, ASP.NET Core, SQL" />
@@ -72,7 +70,6 @@
                         </div>
                     </div>
 
-                    <!-- Trường chỉ dành cho Employer -->
                     <div id="employerFields" style="display: none;">
                         <div class="form-floating mb-3">
                             <input asp-for="Input.CompanyName" class="form-control" placeholder="e.g. Microsoft" />
@@ -113,10 +110,8 @@
                 employerFields.style.display = selectedRole === 'Employer' ? 'block' : 'none';
             }
 
-            // Gọi hàm khi có sự thay đổi lựa chọn
             roleSelector.addEventListener('change', toggleFields);
 
-            // Gọi hàm ngay khi tải trang để xử lý trường hợp postback (lỗi validation)
             toggleFields();
         });
     </script>

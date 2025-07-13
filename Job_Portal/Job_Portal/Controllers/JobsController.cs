@@ -1,46 +1,37 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Job_Portal.Data;
-using System.Linq;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Job_Portal.Controllers
 {
     public class JobsController : Controller
     {
         private readonly ApplicationDbContext _context;
-
         public JobsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
         // GET: /Jobs
-        public async Task<IActionResult> Index(string search)
+        public async Task<IActionResult> Index()
         {
-            var jobs = _context.JobPostings
-                .Include(j => j.Category)
-                .Include(j => j.Company)
-                .AsQueryable();
-
-            if (!string.IsNullOrEmpty(search))
-            {
-                jobs = jobs.Where(j => j.Title.Contains(search) || j.Description.Contains(search));
-            }
-
-            return View(await jobs.ToListAsync());
+            var jobs = await _context.JobPostings
+                .OrderByDescending(j => j.PostedDate)
+                .ToListAsync();
+            return View(jobs);
         }
 
         // GET: /Jobs/Details/5
         public async Task<IActionResult> Details(int id)
         {
             var job = await _context.JobPostings
-                .Include(j => j.Category)
                 .Include(j => j.Company)
+                .Include(j => j.Category)
+                .Include(j => j.Employer)
                 .FirstOrDefaultAsync(j => j.Id == id);
-
             if (job == null) return NotFound();
-
             return View(job);
         }
     }

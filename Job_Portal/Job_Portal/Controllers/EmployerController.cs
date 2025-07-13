@@ -27,38 +27,138 @@ namespace Job_Portal.Controllers
             var user = await _userManager.GetUserAsync(User);
             var jobs = await _context.JobPostings
                 .Where(j => j.UserId == user.Id)
-                .Include(j => j.Category)
-                .Include(j => j.Company)
+                .OrderByDescending(j => j.PostedDate)
                 .ToListAsync();
 
             return View(jobs);
         }
 
         // GET: /Employer/Create
+        [HttpGet]
         public IActionResult Create()
         {
-            ViewBag.Categories = _context.Categories.ToList();
-            ViewBag.Companies = _context.Companies.ToList();
             return View();
         }
 
         // POST: /Employer/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(JobPosting job)
+        public async Task<IActionResult> Create(JobPosting model)
         {
+            var categoryName = Request.Form["Category.Name"].ToString();
+            if (!string.IsNullOrWhiteSpace(categoryName))
+            {
+                var category = await _context.Categories.FirstOrDefaultAsync(c => c.Name == categoryName);
+                if (category == null)
+                {
+                    category = new Category { Name = categoryName };
+                    _context.Categories.Add(category);
+                    await _context.SaveChangesAsync();
+                }
+                model.CategoryId = category.Id;
+            }
+
+            model.PostedDate = DateTime.UtcNow;
+
+            foreach (var key in ModelState.Keys)
+            {
+                var errors = ModelState[key].Errors;
+                foreach (var error in errors)
+                {
+                    Console.WriteLine($"{key}: {error.ErrorMessage}");
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 var user = await _userManager.GetUserAsync(User);
-                job.UserId = user.Id;
-                job.PostedDate = DateTime.Now;
-                _context.JobPostings.Add(job);
+                model.UserId = user.Id;
+                _context.JobPostings.Add(model);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Dashboard");
             }
 
-            ViewBag.Categories = _context.Categories.ToList();
-            ViewBag.Companies = _context.Companies.ToList();
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var job = await _context.JobPostings
+                .FirstOrDefaultAsync(j => j.Id == id && j.UserId == user.Id);
+            if (job == null) return NotFound();
+            return View(job);
+        }
+
+        // POST: /Employer/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, JobPosting model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var job = await _context.JobPostings
+                .FirstOrDefaultAsync(j => j.Id == id && j.UserId == user.Id);
+            if (job == null) return NotFound();
+
+            var categoryName = Request.Form["Category.Name"].ToString();
+            var companyName = Request.Form["Company.Name"].ToString();
+
+            if (!string.IsNullOrWhiteSpace(categoryName))
+            {
+                var category = await _context.Categories.FirstOrDefaultAsync(c => c.Name == categoryName);
+                if (category == null)
+                {
+                    category = new Category { Name = categoryName };
+                    _context.Categories.Add(category);
+                    await _context.SaveChangesAsync();
+                }
+                job.CategoryId = category.Id;
+            }
+
+            if (!string.IsNullOrWhiteSpace(companyName))
+            {
+                var company = await _context.Companies.FirstOrDefaultAsync(c => c.Name == companyName);
+                if (company == null)
+                {
+                    company = new Company { Name = companyName };
+                    _context.Companies.Add(company);
+                    await _context.SaveChangesAsync();
+                }
+                job.CompanyId = company.Id;
+            }
+
+            if (ModelState.IsValid)
+            {
+                job.Title = model.Title;
+                job.Salary = model.Salary;
+                job.JobType = model.JobType;
+                job.Position = model.Position;
+                job.DegreeRequirement = model.DegreeRequirement;
+                job.ExperienceRequirement = model.ExperienceRequirement;
+                job.AgeRequirement = model.AgeRequirement;
+                job.Industry = model.Industry;
+                job.Specialty = model.Specialty;
+                job.Workplace = model.Workplace;
+                job.ApplicationDeadline = model.ApplicationDeadline;
+                job.Description = model.Description;
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Dashboard");
+            }
+            return View(model);
+        }
+
+        public async Task<IActionResult> Applications(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var job = await _context.JobPostings
+                .Include(j => j.Applications)
+                .ThenInclude(a => a.JobSeeker)
+                .FirstOrDefaultAsync(j => j.Id == id && j.UserId == user.Id);
+
+            if (job == null) return NotFound();
+
             return View(job);
         }
     }

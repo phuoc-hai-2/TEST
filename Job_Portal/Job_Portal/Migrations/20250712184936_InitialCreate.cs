@@ -31,8 +31,9 @@ namespace Job_Portal.Migrations
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Skills = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Qualifications = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Skills = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Qualifications = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CompanyName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -73,8 +74,8 @@ namespace Job_Portal.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Website = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Website = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -193,11 +194,21 @@ namespace Job_Portal.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Salary = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    JobType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Position = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DegreeRequirement = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ExperienceRequirement = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AgeRequirement = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Industry = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Specialty = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Workplace = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PostedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false),
-                    CompanyId = table.Column<int>(type: "int", nullable: false),
+                    ApplicationDeadline = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: true),
+                    CompanyId = table.Column<int>(type: "int", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
@@ -214,13 +225,13 @@ namespace Job_Portal.Migrations
                         column: x => x.CategoryId,
                         principalTable: "Categories",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
                         name: "FK_JobPostings_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.CreateTable(
@@ -230,16 +241,15 @@ namespace Job_Portal.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     JobPostingId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    AppliedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ResumeFilePath = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    JobSeekerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    AppliedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_JobApplications", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_JobApplications_AspNetUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_JobApplications_AspNetUsers_JobSeekerId",
+                        column: x => x.JobSeekerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -296,9 +306,9 @@ namespace Job_Portal.Migrations
                 column: "JobPostingId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_JobApplications_UserId",
+                name: "IX_JobApplications_JobSeekerId",
                 table: "JobApplications",
-                column: "UserId");
+                column: "JobSeekerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_JobPostings_CategoryId",

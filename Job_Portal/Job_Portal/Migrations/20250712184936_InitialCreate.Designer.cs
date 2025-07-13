@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Job_Portal.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250629020333_UpdateUserSchemaForRoles")]
-    partial class UpdateUserSchemaForRoles
+    [Migration("20250712184936_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -130,7 +130,6 @@ namespace Job_Portal.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -139,7 +138,6 @@ namespace Job_Portal.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Website")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -161,11 +159,7 @@ namespace Job_Portal.Migrations
                     b.Property<int>("JobPostingId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ResumeFilePath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
+                    b.Property<string>("JobSeekerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -173,7 +167,7 @@ namespace Job_Portal.Migrations
 
                     b.HasIndex("JobPostingId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("JobSeekerId");
 
                     b.ToTable("JobApplications");
                 });
@@ -186,27 +180,65 @@ namespace Job_Portal.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoryId")
+                    b.Property<string>("AgeRequirement")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ApplicationDeadline")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CompanyId")
+                    b.Property<int?>("CompanyId")
                         .HasColumnType("int");
+
+                    b.Property<string>("DegreeRequirement")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExperienceRequirement")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Industry")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("JobType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Position")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("PostedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Salary")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Specialty")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Workplace")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -355,14 +387,14 @@ namespace Job_Portal.Migrations
             modelBuilder.Entity("Job_Portal.Models.JobApplication", b =>
                 {
                     b.HasOne("Job_Portal.Models.JobPosting", "JobPosting")
-                        .WithMany()
+                        .WithMany("Applications")
                         .HasForeignKey("JobPostingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Job_Portal.Models.ApplicationUser", "JobSeeker")
                         .WithMany("JobApplications")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("JobSeekerId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -376,14 +408,12 @@ namespace Job_Portal.Migrations
                     b.HasOne("Job_Portal.Models.Category", "Category")
                         .WithMany("JobPostings")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Job_Portal.Models.Company", "Company")
                         .WithMany("JobPostings")
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("Job_Portal.Models.ApplicationUser", "Employer")
                         .WithMany("JobPostings")
@@ -464,6 +494,11 @@ namespace Job_Portal.Migrations
             modelBuilder.Entity("Job_Portal.Models.Company", b =>
                 {
                     b.Navigation("JobPostings");
+                });
+
+            modelBuilder.Entity("Job_Portal.Models.JobPosting", b =>
+                {
+                    b.Navigation("Applications");
                 });
 #pragma warning restore 612, 618
         }
