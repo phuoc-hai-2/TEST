@@ -3,89 +3,97 @@
     ViewData["Title"] = "Đăng tin tuyển dụng";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
 <div class="main-content-section">
     <h2 class="mb-4" style="font-weight:700;">@ViewData["Title"]</h2>
     <form asp-action="Create" method="post" autocomplete="off">
         @Html.AntiForgeryToken()
-        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>        
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
         <div class="row">
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label asp-for="Title" class="form-label"></label>
-                    <input asp-for="Title" class="form-control" />
+                    <label for="Title" class="form-label">Tiêu đề</label>
+                    <input type="text" id="Title" name="Title" class="form-control" placeholder="Ví dụ: Tuyển dụng lập trình viên ReactJS" value="@Model?.Title" />
                     <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="Position" class="form-label"></label>
-                    <input asp-for="Position" class="form-control" placeholder="Nhân Viên/Chuyên Viên" />
+                    <label for="Position" class="form-label">Vị trí</label>
+                    <input type="text" id="Position" name="Position" class="form-control" placeholder="Nhân Viên/Chuyên Viên" value="@Model?.Position" />
                     <span asp-validation-for="Position" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="Workplace" class="form-label"></label>
-                    <input asp-for="Workplace" class="form-control" placeholder="Toàn quốc, Hồ Chí Minh, ..." />
+                    <label for="Workplace" class="form-label">Nơi làm việc</label>
+                    <input type="text" id="Workplace" name="Workplace" class="form-control" placeholder="Toàn quốc, Hồ Chí Minh, ..." value="@Model?.Workplace" />
                     <span asp-validation-for="Workplace" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="CompanyId" class="form-label">Công ty</label>
-                    <select asp-for="CompanyId" class="form-control" asp-items="ViewBag.CompanyList"></select>
-                    <span asp-validation-for="CompanyId" class="text-danger"></span>
+                    <label for="CompanyName" class="form-label">Tên công ty</label>
+                    <input type="text" id="CompanyName" name="CompanyName" class="form-control" placeholder="Tên công ty" value="" />
+                    <span class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="Salary" class="form-label"></label>
-                    <input asp-for="Salary" class="form-control" type="number" min="0" step="0.01" placeholder="15000000" />
+                    <label for="Salary" class="form-label">Mức lương (VNĐ)</label>
+                    <input type="number" id="Salary" name="Salary" class="form-control" min="0" step="0.01" placeholder="15000000" value="@(Model?.Salary ?? 0)" />
                     <span asp-validation-for="Salary" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="ApplicationDeadline" class="form-label"></label>
-                    <input asp-for="ApplicationDeadline" class="form-control" type="date" />
-                    <span asp-validation-for="ApplicationDeadline" class="text-danger"></span>
+                    <label for="ApplicationDeadline" class="form-label">Hạn nộp hồ sơ</label>
+                    <input type="date" id="ApplicationDeadline" name="ApplicationDeadline" class="form-control" />
+                    <span class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="JobType" class="form-label"></label>
-                    <input asp-for="JobType" class="form-control" placeholder="Toàn thời gian" />
+                    <label for="JobType" class="form-label">Loại hình công việc</label>
+                    <input type="text" id="JobType" name="JobType" class="form-control" placeholder="Toàn thời gian, Bán thời gian, Thực tập..." value="@Model?.JobType" />
                     <span asp-validation-for="JobType" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="DegreeRequirement" class="form-label"></label>
-                    <input asp-for="DegreeRequirement" class="form-control" placeholder="Cao Đẳng" />
+                    <label for="DegreeRequirement" class="form-label">Yêu cầu bằng cấp</label>
+                    <input type="text" id="DegreeRequirement" name="DegreeRequirement" class="form-control" placeholder="Cao Đẳng, Đại Học, Thạc Sĩ..." value="@Model?.DegreeRequirement" />
                     <span asp-validation-for="DegreeRequirement" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
                     <label for="Category_Name" class="form-label">Phân loại công việc (Category)</label>
-                    <input type="text" name="Category.Name" id="Category_Name" class="form-control" placeholder="VD: IT, Kế toán, Giáo dục..." />
+                    <input type="text" name="Category.Name" id="Category_Name" class="form-control" placeholder="VD: IT, Kế toán, Giáo dục..." value="" />
                     <span asp-validation-for="Category.Name" class="text-danger"></span>
                 </div>
             </div>
+
             <div class="col-md-6">
                 <div class="mb-3">
-                    <label asp-for="ExperienceRequirement" class="form-label"></label>
-                    <input asp-for="ExperienceRequirement" class="form-control" placeholder="Trên 0.5 năm" />
+                    <label for="ExperienceRequirement" class="form-label">Yêu cầu kinh nghiệm</label>
+                    <input type="text" id="ExperienceRequirement" name="ExperienceRequirement" class="form-control" placeholder="Trên 0.5 năm, 1-2 năm, Không yêu cầu..." value="@Model?.ExperienceRequirement" />
                     <span asp-validation-for="ExperienceRequirement" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="AgeRequirement" class="form-label"></label>
-                    <input asp-for="AgeRequirement" class="form-control" placeholder="20-40" />
+                    <label for="AgeRequirement" class="form-label">Yêu cầu độ tuổi</label>
+                    <input type="text" id="AgeRequirement" name="AgeRequirement" class="form-control" placeholder="20-40, Không giới hạn..." value="@Model?.AgeRequirement" />
                     <span asp-validation-for="AgeRequirement" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="Industry" class="form-label"></label>
-                    <input asp-for="Industry" class="form-control" placeholder="Kinh Doanh/Bán Hàng, ..." />
+                    <label for="Industry" class="form-label">Ngành nghề</label>
+                    <input type="text" id="Industry" name="Industry" class="form-control" placeholder="Kinh Doanh/Bán Hàng, Công nghệ thông tin..." value="@Model?.Industry" />
                     <span asp-validation-for="Industry" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <label asp-for="Specialty" class="form-label"></label>
-                    <input asp-for="Specialty" class="form-control" placeholder="Tư Vấn B2B, Phát Triển Thị Trường" />
+                    <label for="Specialty" class="form-label">Chuyên ngành</label>
+                    <input type="text" id="Specialty" name="Specialty" class="form-control" placeholder="Tư Vấn B2B, Phát Triển Thị Trường..." value="@Model?.Specialty" />
                     <span asp-validation-for="Specialty" class="text-danger"></span>
                 </div>
-                <input asp-for="PostedDate" type="hidden" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                <input type="hidden" id="PostedDate" name="PostedDate" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
             </div>
         </div>
+
         <div class="mb-3">
-            <label asp-for="Description" class="form-label"></label>
-            <textarea asp-for="Description" class="form-control" rows="7" placeholder="Mô tả công việc..."></textarea>
+            <label for="Description" class="form-label">Mô tả công việc</label>
+            <textarea id="Description" name="Description" class="form-control" rows="7" placeholder="Mô tả công việc chi tiết, yêu cầu, quyền lợi...">@Model?.Description</textarea>
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
+
         <button type="submit" class="btn btn-primary">Đăng tin</button>
         <a asp-action="Dashboard" class="btn btn-secondary">Quay lại</a>
     </form>
 </div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Create.css" asp-append-version="true" />
+}

@@ -3,44 +3,185 @@
     ViewData["Title"] = "Danh sách việc làm mới nhất";
 }
 <div class="main-content-section">
-    <h2 class="mb-4" style="font-weight:700;">Danh sách việc làm mới nhất</h2>
-    <div class="row row-cols-1 row-cols-md-2 g-4">
-        @foreach (var job in Model)
-        {
-            var isExpired = job.ApplicationDeadline < DateTime.UtcNow;
-            var isClosed = job.IsClosed;
-            <div class="col">
-                <div class="job-card">
-                    <div class="job-title">@job.Title</div>
-                    <div class="job-info">
-                        <b>Mức lương:</b> <span style="color:#0061d4;">@job.Salary</span>
-                        <span class="ms-3"><b>Địa điểm:</b> @job.Workplace</span>
+    <div class="bg-white shadow rounded-4 px-4 py-4" style="min-height:550px;">
+        <h2 class="mb-5 fw-bold text-primary text-center" style="font-size:2.1rem; letter-spacing:.5px;">@ViewData["Title"]</h2>
+        <div class="row g-4 justify-content-center">
+            @foreach (var job in Model)
+            {
+                var isExpired = job.ApplicationDeadline < DateTime.UtcNow;
+                var isClosed = job.IsClosed;
+                <div class="col-12 col-md-6 col-lg-5 d-flex">
+                    <div class="card shadow-sm border-0 flex-fill rounded-4" style="min-width:280px;">
+                        <div class="card-body px-4 py-3 d-flex flex-column h-100">
+                            <h5 class="card-title fw-bold text-dark mb-2">@job.Title</h5>
+                            <div class="mb-2 text-muted" style="font-size: 1.03rem;">
+                                <span class="me-3">
+                                    <i class="bi bi-cash-coin text-success"></i>
+                                    <b>Mức lương:</b>
+                                    <span style="color:#1581f7;">@string.Format("{0:N0} đ", job.Salary)</span>
+                                </span>
+                                <span>
+                                    <i class="bi bi-geo-alt-fill text-danger"></i>
+                                    <b>Địa điểm:</b> @job.Workplace
+                                </span>
+                            </div>
+                            <div class="mb-2" style="font-size: 1rem;">
+                                <span class="me-3">
+                                    <i class="bi bi-person-badge"></i>
+                                    <b>Vị trí:</b> @job.Position
+                                </span>
+                                <span>
+                                    <i class="bi bi-briefcase"></i>
+                                    <b>Loại hình:</b> @job.JobType
+                                </span>
+                            </div>
+                            <div class="mb-3" style="font-size: 1rem;">
+                                <span class="me-3">
+                                    <i class="bi bi-calendar2-event"></i>
+                                    <b>Hạn nộp:</b> @job.ApplicationDeadline.ToString("dd/MM/yyyy")
+                                </span>
+                                <span>
+                                    <b>Trạng thái:</b>
+                                    @if (isClosed)
+                                    {
+                                        <span class="badge bg-danger">Đã đóng</span>
+                                    }
+                                    else if (isExpired)
+                                    {
+                                        <span class="badge bg-warning text-dark">Hết hạn</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Mở ứng tuyển</span>
+                                    }
+                                </span>
+                            </div>
+                            <div class="mt-auto text-end">
+                                <a asp-action="Details" asp-route-id="@job.Id" class="btn btn-primary btn-sm px-4 shadow-sm">
+                                    Xem chi tiết <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                    <div class="job-info">
-                        <b>Vị trí:</b> @job.Position
-                        <span class="ms-3"><b>Loại hình:</b> @job.JobType</span>
-                    </div>
-                    <div class="job-info">
-                        <b>Hạn nộp:</b> @job.ApplicationDeadline.ToString("dd/MM/yyyy")
-                        <span class="ms-3">
-                            <b>Trạng thái:</b>
-                            @if (isClosed)
-                            {
-                                <span class="badge bg-danger">Đã đóng</span>
-                            }
-                            else if (isExpired)
-                            {
-                                <span class="badge bg-warning text-dark">Hết hạn</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-success">Mở ứng tuyển</span>
-                            }
-                        </span>
-                    </div>
-                    <a asp-action="Details" asp-route-id="@job.Id" class="btn btn-primary btn-sm mt-2">Xem chi tiết</a>
                 </div>
-            </div>
-        }
+            }
+        </div>
     </div>
 </div>
+
+@section Styles {
+    <style>
+        /* --- CSS cho Index: job list, card, heading, badge, button --- */
+        .main-content-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding-top: 0;
+        }
+
+        .joblist-wrapper {
+            background: #fff;
+            border-radius: 32px;
+            box-shadow: 0 6px 40px 0 rgba(0,0,0,.11), 0 1.5px 6px 0 rgba(0,0,0,.03);
+            padding: 38px 32px 38px 32px;
+            min-height: 540px;
+            width: 100%;
+        }
+
+        .heading-joblist {
+            font-size: 2.3rem;
+            font-weight: 800;
+            color: #1581f7;
+            letter-spacing: .5px;
+            margin-bottom: 38px;
+            text-align: center;
+        }
+
+        .job-card {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 2px 16px 0 rgba(0,0,0,.09), 0 1.5px 6px 0 rgba(0,0,0,.04);
+            min-width: 270px;
+            padding: 21px 28px 18px 28px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            transition: box-shadow 0.18s, transform 0.18s;
+        }
+
+            .job-card:hover {
+                box-shadow: 0 6px 32px 0 rgba(0,0,0,.14), 0 1.5px 6px 0 rgba(0,0,0,.07);
+                transform: translateY(-4px) scale(1.012);
+            }
+
+            .job-card .card-title,
+            .job-card h5 {
+                font-size: 1.17rem;
+                font-weight: bold;
+                color: #20294a;
+                margin-bottom: 10px;
+                min-height: 36px;
+            }
+
+        .job-info {
+            font-size: 1.04rem;
+            margin-bottom: 3.5px;
+            color: #222a;
+        }
+
+            .job-info span,
+            .job-info b,
+            .job-info i {
+                vertical-align: middle;
+            }
+
+            .job-info i {
+                font-size: 1.05em;
+                margin-right: 2px;
+            }
+
+        .job-card .badge {
+            font-size: 0.97em;
+            font-weight: 500;
+            padding: 4px 14px;
+            border-radius: 10px;
+            margin-left: 3px;
+        }
+
+        .badge.bg-success {
+            background-color: #18bb53 !important;
+        }
+
+        .badge.bg-warning {
+            background-color: #ffc107 !important;
+            color: #262626 !important;
+        }
+
+        .badge.bg-danger {
+            background-color: #f1416c !important;
+        }
+
+        .btn-primary {
+            background: #1581f7;
+            border: none;
+            font-weight: 500;
+            font-size: 1.07rem;
+            letter-spacing: .2px;
+            border-radius: 8px;
+        }
+
+            .btn-primary:hover, .btn-primary:focus {
+                background: #0061d4;
+            }
+        media (max-width: 992px) {
+            .joblist-wrapper
+
+        {
+            padding: 18px 6px;
+        }
+
+        }
+    </style>
+}

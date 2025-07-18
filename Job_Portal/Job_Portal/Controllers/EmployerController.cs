@@ -6,6 +6,7 @@ using Job_Portal.Data;
 using Job_Portal.Models;
 using System.Threading.Tasks;
 using System.Linq;
+using System;
 
 namespace Job_Portal.Controllers
 {
@@ -45,6 +46,7 @@ namespace Job_Portal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(JobPosting model)
         {
+            // Xử lý Category
             var categoryName = Request.Form["Category.Name"].ToString();
             if (!string.IsNullOrWhiteSpace(categoryName))
             {
@@ -58,16 +60,21 @@ namespace Job_Portal.Controllers
                 model.CategoryId = category.Id;
             }
 
-            model.PostedDate = DateTime.UtcNow;
-
-            foreach (var key in ModelState.Keys)
+            // Xử lý Company (cho phép nhập tên mới)
+            var companyName = Request.Form["CompanyName"].ToString();
+            if (!string.IsNullOrWhiteSpace(companyName))
             {
-                var errors = ModelState[key].Errors;
-                foreach (var error in errors)
+                var company = await _context.Companies.FirstOrDefaultAsync(c => c.Name == companyName);
+                if (company == null)
                 {
-                    Console.WriteLine($"{key}: {error.ErrorMessage}");
+                    company = new Company { Name = companyName };
+                    _context.Companies.Add(company);
+                    await _context.SaveChangesAsync();
                 }
+                model.CompanyId = company.Id;
             }
+
+            model.PostedDate = DateTime.UtcNow;
 
             if (ModelState.IsValid)
             {
@@ -88,6 +95,7 @@ namespace Job_Portal.Controllers
             var job = await _context.JobPostings
                 .FirstOrDefaultAsync(j => j.Id == id && j.UserId == user.Id);
             if (job == null) return NotFound();
+
             return View(job);
         }
 
@@ -102,8 +110,6 @@ namespace Job_Portal.Controllers
             if (job == null) return NotFound();
 
             var categoryName = Request.Form["Category.Name"].ToString();
-            var companyName = Request.Form["Company.Name"].ToString();
-
             if (!string.IsNullOrWhiteSpace(categoryName))
             {
                 var category = await _context.Categories.FirstOrDefaultAsync(c => c.Name == categoryName);
@@ -116,6 +122,7 @@ namespace Job_Portal.Controllers
                 job.CategoryId = category.Id;
             }
 
+            var companyName = Request.Form["CompanyName"].ToString();
             if (!string.IsNullOrWhiteSpace(companyName))
             {
                 var company = await _context.Companies.FirstOrDefaultAsync(c => c.Name == companyName);
@@ -126,6 +133,10 @@ namespace Job_Portal.Controllers
                     await _context.SaveChangesAsync();
                 }
                 job.CompanyId = company.Id;
+            }
+            else
+            {
+                job.CompanyId = model.CompanyId;
             }
 
             if (ModelState.IsValid)
