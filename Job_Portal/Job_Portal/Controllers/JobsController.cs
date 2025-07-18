@@ -15,12 +15,31 @@ namespace Job_Portal.Controllers
         }
 
         // GET: /Jobs
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string keyword, string location, string jobType, decimal? minSalary, decimal? maxSalary)
         {
-            var jobs = await _context.JobPostings
-                .OrderByDescending(j => j.PostedDate)
-                .ToListAsync();
-            return View(jobs);
+            var jobs = _context.JobPostings
+                .Include(j => j.Company)
+                .Include(j => j.Category)
+                .Include(j => j.Employer)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(keyword))
+                jobs = jobs.Where(j =>
+                    j.Title.Contains(keyword) ||
+                    j.Position.Contains(keyword) ||
+                    (j.Company != null && j.Company.Name.Contains(keyword))
+                );
+            if (!string.IsNullOrWhiteSpace(location))
+                jobs = jobs.Where(j => j.Workplace.Contains(location));
+            if (!string.IsNullOrWhiteSpace(jobType))
+                jobs = jobs.Where(j => j.JobType == jobType);
+            if (minSalary.HasValue)
+                jobs = jobs.Where(j => j.Salary >= minSalary);
+            if (maxSalary.HasValue)
+                jobs = jobs.Where(j => j.Salary <= maxSalary);
+
+            var jobList = await jobs.OrderByDescending(j => j.PostedDate).ToListAsync();
+            return View(jobList);
         }
 
         // GET: /Jobs/Details/5

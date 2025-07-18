@@ -1,84 +1,146 @@
 ﻿@page
-@model IndexModel
+@model Job_Portal.Areas.Identity.Pages.Account.Manage.IndexModel
 @using Microsoft.AspNetCore.Identity
 @{
     ViewData["Title"] = "Quản lý tài khoản";
+    ViewData["ActivePage"] = ManageNavPages.Index;
     var isEmployer = User.IsInRole("Employer");
     var isJobSeeker = User.IsInRole("JobSeeker");
 }
-
-<div class="row justify-content-center">
-    <div class="col-md-8 col-lg-7">
-        <div class="card shadow-sm">
-            <div class="card-header text-center bg-primary text-white">
-                <h2 class="mb-0">@ViewData["Title"]</h2>
-            </div>
-            <div class="card-body p-4">
-                @if (!string.IsNullOrEmpty(Model.StatusMessage))
+<div class="main-content-section d-flex flex-column align-items-center" style="min-height: 80vh;">
+    <div class="account-manage-card">
+        <div class="account-manage-header">
+            Quản lý tài khoản
+        </div>
+        <div class="account-manage-form">
+            @if (!string.IsNullOrEmpty(Model.StatusMessage))
+            {
+                <div class="alert alert-success" role="alert">
+                    @Model.StatusMessage
+                </div>
+            }
+            <form method="post" autocomplete="off">
+                <div class="mb-3 row">
+                    <label class="col-sm-4 col-form-label">Tên đăng nhập</label>
+                    <div class="col-sm-8">
+                        <input class="form-control" value="@Model.Username" disabled />
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label asp-for="Input.FullName" class="col-sm-4 col-form-label"></label>
+                    <div class="col-sm-8">
+                        <input asp-for="Input.FullName" class="form-control" />
+                        <span asp-validation-for="Input.FullName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <label asp-for="Input.PhoneNumber" class="col-sm-4 col-form-label"></label>
+                    <div class="col-sm-8">
+                        <input asp-for="Input.PhoneNumber" class="form-control" />
+                        <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+                    </div>
+                </div>
+                @if (isJobSeeker)
                 {
-                    <div class="alert alert-success" role="alert">
-                        @Model.StatusMessage
+                    <div class="mb-3 row">
+                        <label asp-for="Input.Skills" class="col-sm-4 col-form-label"></label>
+                        <div class="col-sm-8">
+                            <input asp-for="Input.Skills" class="form-control" />
+                            <span asp-validation-for="Input.Skills" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label asp-for="Input.Qualifications" class="col-sm-4 col-form-label"></label>
+                        <div class="col-sm-8">
+                            <textarea asp-for="Input.Qualifications" class="form-control" rows="2"></textarea>
+                            <span asp-validation-for="Input.Qualifications" class="text-danger"></span>
+                        </div>
                     </div>
                 }
-                <form method="post" autocomplete="off">
+                @if (isEmployer)
+                {
                     <div class="mb-3 row">
-                        <label class="col-sm-3 col-form-label">Tên đăng nhập</label>
-                        <div class="col-sm-9">
-                            <input class="form-control" value="@Model.Username" disabled />
+                        <label asp-for="Input.CompanyName" class="col-sm-4 col-form-label"></label>
+                        <div class="col-sm-8">
+                            <input asp-for="Input.CompanyName" class="form-control" />
+                            <span asp-validation-for="Input.CompanyName" class="text-danger"></span>
                         </div>
                     </div>
-                    <div class="mb-3 row">
-                        <label asp-for="Input.FullName" class="col-sm-3 col-form-label"></label>
-                        <div class="col-sm-9">
-                            <input asp-for="Input.FullName" class="form-control" />
-                            <span asp-validation-for="Input.FullName" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label asp-for="Input.PhoneNumber" class="col-sm-3 col-form-label"></label>
-                        <div class="col-sm-9">
-                            <input asp-for="Input.PhoneNumber" class="form-control" />
-                            <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
-                        </div>
-                    </div>
-                    @if (isJobSeeker)
-                    {
-                        <div class="mb-3 row">
-                            <label asp-for="Input.Skills" class="col-sm-3 col-form-label"></label>
-                            <div class="col-sm-9">
-                                <input asp-for="Input.Skills" class="form-control" />
-                                <span asp-validation-for="Input.Skills" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <div class="mb-3 row">
-                            <label asp-for="Input.Qualifications" class="col-sm-3 col-form-label"></label>
-                            <div class="col-sm-9">
-                                <textarea asp-for="Input.Qualifications" class="form-control" rows="2"></textarea>
-                                <span asp-validation-for="Input.Qualifications" class="text-danger"></span>
-                            </div>
-                        </div>
-                    }
-                    @if (isEmployer)
-                    {
-                        <div class="mb-3 row">
-                            <label asp-for="Input.CompanyName" class="col-sm-3 col-form-label"></label>
-                            <div class="col-sm-9">
-                                <input asp-for="Input.CompanyName" class="form-control" />
-                                <span asp-validation-for="Input.CompanyName" class="text-danger"></span>
-                            </div>
-                        </div>
-                    }
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            Lưu thay đổi
-                        </button>
-                    </div>
-                </form>
-            </div>
+                }
+                <div class="d-grid mt-3">
+                    <button type="submit" class="btn btn-account">Lưu thay đổi</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
+@section Styles {
+    <style>
+        .account-manage-header {
+            background: #1278fa;
+            color: #fff;
+            text-align: center;
+            font-weight: 800;
+            letter-spacing: .03rem;
+            font-size: 2.1rem;
+            border-radius: 12px 12px 0 0;
+            padding: 18px 0 14px 0;
+            margin-bottom: 0;
+        }
 
+        .account-manage-card {
+            max-width: 520px;
+            margin: 0 auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(21,129,247, 0.09);
+            background: #fff;
+        }
+
+        .account-manage-form {
+            padding: 32px 32px 28px 32px;
+        }
+
+        .btn-account {
+            background: #1278fa;
+            color: #fff;
+            width: 100%;
+            font-size: 1.18rem;
+            border-radius: 8px;
+            padding: 13px 0;
+            font-weight: 700;
+            margin-top: 18px;
+            transition: background 0.18s;
+            border: none;
+        }
+
+            .btn-account:hover {
+                background: #1565c0;
+            }
+
+        .form-control[disabled], .form-control[readonly] {
+            background: #e8effa;
+            color: #a0aec0;
+        }
+
+        .form-label, label {
+            color: #232d41;
+            font-weight: 600;
+        }
+
+        .card {
+            border: none;
+        }
+
+        .card-header {
+            border-radius: 12px 12px 0 0;
+        }
+
+        .card-body {
+            background: #fff;
+        }
+    </style>
+}
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

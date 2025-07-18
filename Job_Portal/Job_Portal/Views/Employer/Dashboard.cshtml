@@ -20,6 +20,7 @@
                         <th>Hạn nộp</th>
                         <th>Ứng viên</th>
                         <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -39,6 +40,12 @@
                             </td>
                             <td>
                                 <a asp-action="Edit" asp-route-id="@job.Id" class="btn btn-warning btn-sm">Chỉnh sửa</a>
+                            </td>
+                            <td>
+                                <form asp-action="Delete" asp-route-id="@job.Id" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa tin này?');" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+                                </form>
                             </td>
                         </tr>
                     }

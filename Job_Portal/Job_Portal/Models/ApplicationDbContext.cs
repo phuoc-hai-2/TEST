@@ -40,6 +40,10 @@ namespace Job_Portal.Data
                 .HasForeignKey(a => a.JobPostingId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            builder.Entity<JobApplication>()
+                .Property(a => a.Status)
+                .HasDefaultValue(ApplicationStatus.Pending);
+
             builder.Entity<JobPosting>()
                 .HasOne(j => j.Category)
                 .WithMany(c => c.JobPostings)

@@ -1,38 +1,73 @@
-﻿/* --- CSS cho Layout: Sidebar, Navbar, Nền trang --- */
-body {
-    background: #f1f5ff !important;
-    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+﻿body {
+    background: linear-gradient(120deg, #e0ecff 0%, #f8fbff 100%) fixed !important;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', Arial, sans-serif;
+    min-height: 100vh;
+    color: #232d41;
+    letter-spacing: 0.01em;
 }
 
 .main-navbar {
-    background: #0d357a;
+    background: linear-gradient(90deg, #1565c0 0%, #1e88e5 100%);
+    box-shadow: 0 2px 16px 0 rgba(21,101,192,0.12);
 }
+
+.navbar .navbar-brand {
+    font-weight: 800;
+    font-size: 1.6rem;
+    letter-spacing: .02em;
+    color: #fff !important;
+}
+
+.navbar .btn-outline-light, .navbar .btn-outline-light.active, .navbar .btn-outline-light:focus {
+    font-weight: 500;
+    border-radius: 8px;
+    margin-right: 6px;
+    border-width: 2px;
+    background: #eaf3ff;
+    color: #1565c0 !important;
+    border-color: #b6d4ff;
+    transition: background 0.2s, color 0.2s;
+}
+
+    .navbar .btn-outline-light:hover {
+        background: #1976d2;
+        color: #fff !important;
+        border-color: #1976d2;
+    }
+
+    .navbar .btn-outline-light:last-child {
+        margin-right: 0;
+    }
 
 .sidebar {
     background: #fff;
-    border-radius: 24px;
-    box-shadow: 0 4px 32px 0 rgba(0,0,0,.07), 0 1.5px 6px 0 rgba(0,0,0,.04);
-    padding: 36px 20px 20px 20px;
-    min-width: 260px;
-    max-width: 320px;
+    border-radius: 20px;
+    box-shadow: 0 6px 28px 0 rgba(0,0,0,.11), 0 1.5px 6px 0 rgba(0,0,0,.03);
+    padding: 36px 18px 20px 18px;
+    min-width: 250px;
+    max-width: 310px;
+    margin-top: 38px;
+    margin-bottom: 36px;
 }
 
 .sidebar-section {
-    margin-bottom: 22px;
+    margin-bottom: 26px;
     background: #f7faff;
-    border-radius: 15px;
-    border: 1.8px solid #e3ecfd;
-    padding: 15px 14px 10px 16px;
+    border-radius: 13px;
+    border: 2px solid #e3ecfd;
+    padding: 14px 12px 10px 14px;
+    box-shadow: 0 2px 10px 0 rgba(0,0,0,.04);
 }
 
     .sidebar-section h5 {
         font-weight: bold;
-        color: #168afc;
-        font-size: 1.18rem;
-        border-bottom: 2.5px solid #168afc;
-        padding-bottom: 3.5px;
-        margin-bottom: 9px;
-        letter-spacing: 0.01rem;
+        color: #1976d2;
+        font-size: 1.17rem;
+        border-bottom: 2px solid #1976d2;
+        padding-bottom: 5px;
+        margin-bottom: 10px;
+        background: linear-gradient(90deg,#e3f0ff 70%, #fff0 100%);
+        border-radius: 4px 4px 0 0;
     }
 
     .sidebar-section ul {
@@ -42,35 +77,200 @@ body {
     }
 
         .sidebar-section ul li {
-            margin-bottom: 7px;
+            margin-bottom: 8px;
         }
 
             .sidebar-section ul li a {
-                color: #222;
+                color: #283348;
                 text-decoration: none;
                 font-weight: 500;
                 font-size: 1rem;
-                transition: color 0.18s;
+                transition: color 0.18s, background 0.16s, padding 0.16s;
+                border-radius: 6px;
+                padding: 2px 6px 2px 2px;
+                display: inline-block;
             }
 
                 .sidebar-section ul li a.active-link,
                 .sidebar-section ul li a:hover {
-                    color: #168afc;
+                    color: #fff;
+                    background: #1976d2;
+                    padding-left: 8px;
                 }
 
 .custom-bg {
     background: transparent !important;
 }
 
+.main-content-section {
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 6px 40px 0 rgba(21,101,192,0.10), 0 1.5px 6px 0 rgba(0,0,0,.04);
+    padding: 38px 34px 32px 34px;
+    margin-bottom: 30px;
+    min-height: 570px;
+}
+
+.account-manage-header {
+    background: #1278fa;
+    color: #fff;
+    text-align: center;
+    font-weight: 800;
+    letter-spacing: .03rem;
+    font-size: 2.1rem;
+    border-radius: 12px 12px 0 0;
+    padding: 18px 0 14px 0;
+    margin-bottom: 0;
+}
+
+.account-manage-card {
+    max-width: 520px;
+    margin: 0 auto;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(21,129,247, 0.09);
+    background: #fff;
+}
+
+.account-manage-form {
+    padding: 32px 32px 28px 32px;
+}
+
+    .account-manage-form label {
+        color: #242e44;
+        font-weight: 600;
+    }
+
+    .account-manage-form input[type="text"],
+    .account-manage-form input[type="email"],
+    .account-manage-form input[type="password"] {
+        color: #232d41;
+        background: #f4f7fb;
+        border: 1.5px solid #c9e1ff;
+        margin-bottom: 12px;
+    }
+
+    .account-manage-form .form-control:disabled,
+    .account-manage-form .form-control[readonly] {
+        background: #e8effa;
+        color: #a0aec0;
+    }
+
+    .account-manage-form .btn-account {
+        background: #1278fa;
+        color: #fff;
+        width: 100%;
+        font-size: 1.18rem;
+        border-radius: 8px;
+        padding: 13px 0;
+        font-weight: 700;
+        margin-top: 18px;
+        transition: background 0.18s;
+        border: none;
+    }
+
+        .account-manage-form .btn-account:hover {
+            background: #1565c0;
+        }
+
+    .account-manage-form .btn-section {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin: 18px 0 0 0;
+    }
+
+    .account-manage-form .btn-account-nav {
+        background: #ecf4ff;
+        color: #1565c0;
+        padding: 9px 0;
+        font-size: 1rem;
+        border-radius: 7px;
+        font-weight: 600;
+        border: none;
+        flex: 1 1 150px;
+        transition: background 0.14s, color 0.13s;
+        text-decoration: none;
+        text-align: center;
+    }
+
+        .account-manage-form .btn-account-nav.active,
+        .account-manage-form .btn-account-nav:hover {
+            background: #1278fa;
+            color: #fff;
+        }
+
+h2, .main-content-section h2 {
+    font-size: 2.15rem;
+    line-height: 2.5rem;
+    color: #1565c0;
+    text-align: center;
+    margin-bottom: 2.2rem;
+    font-weight: 800;
+    letter-spacing: .5px;
+}
+
+@media (max-width: 1200px) {
+    .sidebar {
+        margin-top: 20px;
+        min-width: 210px;
+        max-width: 100vw;
+    }
+
+    .main-content-section {
+        padding: 26px 10px 20px 10px;
+    }
+
+    .account-manage-card {
+        max-width: 98vw;
+    }
+}
+
 @media (max-width:992px) {
     .sidebar {
         margin-bottom: 20px;
+        margin-top: 10px;
+        min-width: 100%;
+        max-width: 100%;
+    }
+
+    .main-content-section {
+        border-radius: 14px;
+        padding: 15px 5px 12px 5px;
+    }
+
+    .account-manage-card {
+        padding: 0;
     }
 }
 
 @media (max-width:768px) {
     .sidebar {
-        min-width: 100% !important;
-        max-width: 100% !important;
+        padding: 20px 8px 15px 8px;
     }
+
+    .main-content-section {
+        margin: 10px 0;
+        padding: 12px 2vw;
+        border-radius: 8px;
+    }
+
+        h2, .main-content-section h2 {
+            font-size: 1.35rem;
+            margin-bottom: 1rem;
+        }
+
+    .account-manage-form {
+        padding: 14px 8px 18px 8px;
+    }
+}
+
+::-webkit-scrollbar {
+    width: 9px;
+    background: #e3eaff;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #b7c7e1;
+    border-radius: 7px;
 }

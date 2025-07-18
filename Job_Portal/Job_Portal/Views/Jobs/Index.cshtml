@@ -1,20 +1,73 @@
 ﻿@model List<Job_Portal.Models.JobPosting>
 @{
     ViewData["Title"] = "Danh sách việc làm mới nhất";
+    var currentKeyword = Context.Request.Query["keyword"].ToString();
+    var currentLocation = Context.Request.Query["location"].ToString();
+    var currentJobType = Context.Request.Query["jobType"].ToString();
+    var currentMinSalary = Context.Request.Query["minSalary"].ToString();
+    var currentMaxSalary = Context.Request.Query["maxSalary"].ToString();
+    var jobTypes = new[] { "Toàn thời gian", "Bán thời gian", "Thực tập" };
 }
-<div class="main-content-section">
-    <div class="bg-white shadow rounded-4 px-4 py-4" style="min-height:550px;">
-        <h2 class="mb-5 fw-bold text-primary text-center" style="font-size:2.1rem; letter-spacing:.5px;">@ViewData["Title"]</h2>
+<div class="main-content-section portal-bg">
+    <div class="joblist-wrapper mx-auto">
+        <h2 class="heading-joblist">@ViewData["Title"]</h2>
+        <!-- Thanh tìm kiếm và bộ lọc -->
+        <form method="get" class="row g-3 mb-4 justify-content-center align-items-end">
+            <div class="col-12 col-md-3">
+                <label class="form-label fw-semibold mb-0">Từ khoá</label>
+                <input name="keyword" value="@currentKeyword" type="text" class="form-control" placeholder="Nhập vị trí, kỹ năng, công ty...">
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="form-label fw-semibold mb-0">Địa điểm</label>
+                <input name="location" value="@currentLocation" type="text" class="form-control" placeholder="TP.HCM, Hà Nội...">
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="form-label fw-semibold mb-0">Loại hình</label>
+                <select name="jobType" class="form-select">
+                    <option value="">Tất cả</option>
+                    @foreach (var type in jobTypes)
+                    {
+                        if (type == currentJobType)
+                        {
+                            <option value="@type" selected>@type</option>
+                        }
+                        else
+                        {
+                            <option value="@type">@type</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="form-label fw-semibold mb-0">Lương từ</label>
+                <input name="minSalary" type="number" value="@currentMinSalary" class="form-control" min="0" placeholder="VNĐ">
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="form-label fw-semibold mb-0">Đến</label>
+                <input name="maxSalary" type="number" value="@currentMaxSalary" class="form-control" min="0" placeholder="VNĐ">
+            </div>
+            <div class="col-6 col-md-1 d-grid">
+                <label class="form-label fw-semibold mb-0" style="opacity:0;">Tìm kiếm</label>
+                <button class="btn btn-primary px-4" type="submit"><i class="bi bi-search"></i> Tìm kiếm</button>
+            </div>
+        </form>
+        <!-- Danh sách việc làm -->
         <div class="row g-4 justify-content-center">
+            @if (!Model.Any())
+            {
+                <div class="col-12">
+                    <div class="alert alert-warning text-center">Không tìm thấy công việc phù hợp.</div>
+                </div>
+            }
             @foreach (var job in Model)
             {
                 var isExpired = job.ApplicationDeadline < DateTime.UtcNow;
                 var isClosed = job.IsClosed;
-                <div class="col-12 col-md-6 col-lg-5 d-flex">
-                    <div class="card shadow-sm border-0 flex-fill rounded-4" style="min-width:280px;">
+                <div class="col-12 col-md-6 col-lg-6 d-flex">
+                    <div class="job-card card shadow-sm border-0 flex-fill rounded-4 w-100">
                         <div class="card-body px-4 py-3 d-flex flex-column h-100">
                             <h5 class="card-title fw-bold text-dark mb-2">@job.Title</h5>
-                            <div class="mb-2 text-muted" style="font-size: 1.03rem;">
+                            <div class="mb-2 job-info text-muted">
                                 <span class="me-3">
                                     <i class="bi bi-cash-coin text-success"></i>
                                     <b>Mức lương:</b>
@@ -25,7 +78,7 @@
                                     <b>Địa điểm:</b> @job.Workplace
                                 </span>
                             </div>
-                            <div class="mb-2" style="font-size: 1rem;">
+                            <div class="mb-2 job-info">
                                 <span class="me-3">
                                     <i class="bi bi-person-badge"></i>
                                     <b>Vị trí:</b> @job.Position
@@ -35,8 +88,8 @@
                                     <b>Loại hình:</b> @job.JobType
                                 </span>
                             </div>
-                            <div class="mb-3" style="font-size: 1rem;">
-                                <span class="me-3">
+                            <div class="mb-3 job-info d-flex align-items-center" style="gap:20px;">
+                                <span>
                                     <i class="bi bi-calendar2-event"></i>
                                     <b>Hạn nộp:</b> @job.ApplicationDeadline.ToString("dd/MM/yyyy")
                                 </span>
@@ -68,10 +121,12 @@
         </div>
     </div>
 </div>
-
 @section Styles {
     <style>
-        /* --- CSS cho Index: job list, card, heading, badge, button --- */
+        body, html, .portal-bg {
+            background: linear-gradient(120deg, #eef3fc 0%, #f6faff 70%) !important;
+        }
+
         .main-content-section {
             min-height: 100vh;
             display: flex;
@@ -84,9 +139,10 @@
             background: #fff;
             border-radius: 32px;
             box-shadow: 0 6px 40px 0 rgba(0,0,0,.11), 0 1.5px 6px 0 rgba(0,0,0,.03);
-            padding: 38px 32px 38px 32px;
+            padding: 38px 56px 38px 56px;
             min-height: 540px;
             width: 100%;
+            max-width: 1150px;
         }
 
         .heading-joblist {
@@ -102,7 +158,8 @@
             background: #fff;
             border-radius: 20px;
             box-shadow: 0 2px 16px 0 rgba(0,0,0,.09), 0 1.5px 6px 0 rgba(0,0,0,.04);
-            min-width: 270px;
+            min-width: 370px;
+            max-width: 520px;
             padding: 21px 28px 18px 28px;
             margin-bottom: 15px;
             display: flex;
@@ -116,8 +173,7 @@
                 transform: translateY(-4px) scale(1.012);
             }
 
-            .job-card .card-title,
-            .job-card h5 {
+            .job-card .card-title, .job-card h5 {
                 font-size: 1.17rem;
                 font-weight: bold;
                 color: #20294a;
@@ -148,6 +204,7 @@
             padding: 4px 14px;
             border-radius: 10px;
             margin-left: 3px;
+            white-space: nowrap;
         }
 
         .badge.bg-success {
@@ -175,11 +232,44 @@
             .btn-primary:hover, .btn-primary:focus {
                 background: #0061d4;
             }
+        media (max-width: 1200px) {
+            .joblist-wrapper
+
+        {
+            padding: 18px 8px;
+            max-width: 1000px;
+        }
+
+        .job-card {
+            min-width: 320px;
+            max-width: 440px;
+        }
+
+        }
         media (max-width: 992px) {
             .joblist-wrapper
 
         {
-            padding: 18px 6px;
+            padding: 16px 4px;
+            max-width: 100%;
+        }
+
+        .job-card {
+            min-width: 280px;
+            max-width: 100%;
+        }
+
+        }
+        media (max-width: 768px) {
+            .main-content-section
+
+        {
+            padding: 0;
+        }
+
+        .joblist-wrapper {
+            padding: 6px 0;
+            border-radius: 0;
         }
 
         }

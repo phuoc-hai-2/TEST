@@ -2,9 +2,10 @@
 @{
     ViewData["Title"] = "Đăng tin tuyển dụng";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var jobTypes = new[] { "Toàn thời gian", "Bán thời gian", "Thực tập" };
 }
 
-<div class="main-content-section">
+<div class="main-content-section portal-bg">
     <h2 class="mb-4" style="font-weight:700;">@ViewData["Title"]</h2>
     <form asp-action="Create" method="post" autocomplete="off">
         @Html.AntiForgeryToken()
@@ -38,12 +39,25 @@
                 </div>
                 <div class="mb-3">
                     <label for="ApplicationDeadline" class="form-label">Hạn nộp hồ sơ</label>
-                    <input type="date" id="ApplicationDeadline" name="ApplicationDeadline" class="form-control" />
+                    <input type="date" id="ApplicationDeadline" name="ApplicationDeadline" class="form-control" value="@Model?.ApplicationDeadline.ToString("yyyy-MM-dd")" />
                     <span class="text-danger"></span>
                 </div>
                 <div class="mb-3">
                     <label for="JobType" class="form-label">Loại hình công việc</label>
-                    <input type="text" id="JobType" name="JobType" class="form-control" placeholder="Toàn thời gian, Bán thời gian, Thực tập..." value="@Model?.JobType" />
+                    <select id="JobType" name="JobType" class="form-select">
+                        <option value="">Chọn loại hình</option>
+                        @foreach (var type in jobTypes)
+                        {
+                            if (Model?.JobType == type)
+                            {
+                                <option value="@type" selected>@type</option>
+                            }
+                            else
+                            {
+                                <option value="@type">@type</option>
+                            }
+                        }
+                    </select>
                     <span asp-validation-for="JobType" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
@@ -53,7 +67,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="Category_Name" class="form-label">Phân loại công việc (Category)</label>
-                    <input type="text" name="Category.Name" id="Category_Name" class="form-control" placeholder="VD: IT, Kế toán, Giáo dục..." value="" />
+                    <input type="text" name="Category.Name" id="Category_Name" class="form-control" placeholder="VD: IT, Kế toán, Giáo dục..." value="@Model?.Category?.Name" />
                     <span asp-validation-for="Category.Name" class="text-danger"></span>
                 </div>
             </div>

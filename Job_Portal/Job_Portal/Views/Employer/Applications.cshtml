@@ -26,12 +26,15 @@
     </p>
     @if (Model.Applications != null && Model.Applications.Any())
     {
-        <table class="table table-bordered">
+        <table class="table table-bordered align-middle">
             <thead>
                 <tr>
                     <th>Họ tên ứng viên</th>
                     <th>Email</th>
                     <th>Ngày ứng tuyển</th>
+                    <th>Trạng thái</th>
+                    <th>Xác nhận/Loại</th>
+                    <th>Chi tiết</th>
                 </tr>
             </thead>
             <tbody>
@@ -41,6 +44,38 @@
                         <td>@app.JobSeeker?.FullName</td>
                         <td>@app.JobSeeker?.Email</td>
                         <td>@app.AppliedDate.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            @switch (app.Status)
+                            {
+                                case Job_Portal.Models.ApplicationStatus.Invited:
+                                    <span class="badge bg-success">Đã mời phỏng vấn</span>
+                                    break;
+                                case Job_Portal.Models.ApplicationStatus.Rejected:
+                                    <span class="badge bg-danger">Đã loại</span>
+                                    break;
+                                default:
+                                    <span class="badge bg-secondary">Chờ xác nhận</span>
+                                    break;
+                            }
+                        </td>
+                        <td>
+                            @if (app.Status == Job_Portal.Models.ApplicationStatus.Pending)
+                            {
+                                <form asp-action="ConfirmInterview" asp-route-id="@Model.Id" asp-route-applicationId="@app.Id" method="post" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-success btn-sm">Xác nhận</button>
+                                </form>
+                                <form asp-action="RejectCandidate" asp-route-id="@Model.Id" asp-route-applicationId="@app.Id" method="post" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-danger btn-sm">Loại</button>
+                                </form>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="CandidateDetail" asp-route-id="@Model.Id" asp-route-applicationId="@app.Id" class="btn btn-info btn-sm">
+                                Xem chi tiết
+                            </a>
+                        </td>
                     </tr>
                 }
             </tbody>

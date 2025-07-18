@@ -1,0 +1,41 @@
+﻿@model Job_Portal.Models.JobApplication
+@{
+    ViewData["Title"] = "Chi tiết ứng viên";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="main-content-section">
+    <h2 class="mb-4" style="font-weight:700;">Chi tiết ứng viên</h2>
+    <div class="bg-white p-4 rounded shadow-sm mb-4">
+        <h5><i class="bi bi-person"></i> @Model.JobSeeker?.FullName</h5>
+        <p><i class="bi bi-envelope"></i> <strong>Email:</strong> @Model.JobSeeker?.Email</p>
+        <p><i class="bi bi-calendar"></i> <strong>Ngày ứng tuyển:</strong> @Model.AppliedDate.ToString("dd/MM/yyyy")</p>
+        @if (!string.IsNullOrWhiteSpace(Model.JobSeeker?.Skills))
+        {
+            <p><i class="bi bi-tools"></i> <strong>Kỹ năng:</strong> @Model.JobSeeker.Skills</p>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.JobSeeker?.Qualifications))
+        {
+            <p><i class="bi bi-award"></i> <strong>Bằng cấp:</strong> @Model.JobSeeker.Qualifications</p>
+        }
+        <p>
+            <strong>Trạng thái:</strong>
+            @switch (Model.Status)
+            {
+                case Job_Portal.Models.ApplicationStatus.Invited:
+                    <span class="badge bg-success">Đã mời phỏng vấn</span>
+                    break;
+                case Job_Portal.Models.ApplicationStatus.Rejected:
+                    <span class="badge bg-danger">Đã loại</span>
+                    break;
+                default:
+                    <span class="badge bg-secondary">Chờ xác nhận</span>
+                    break;
+            }
+        </p>
+        @if (!string.IsNullOrEmpty(Model.FeedbackMessage))
+        {
+            <div class="alert alert-info mt-3">@Model.FeedbackMessage</div>
+        }
+    </div>
+    <a asp-action="Applications" asp-route-id="@Model.JobPostingId" class="btn btn-secondary">Quay lại danh sách ứng viên</a>
+</div>

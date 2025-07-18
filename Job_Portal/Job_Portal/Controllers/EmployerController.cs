@@ -172,5 +172,70 @@ namespace Job_Portal.Controllers
 
             return View(job);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmInterview(int id, int applicationId)
+        {
+            var application = await _context.JobApplications
+                .Include(a => a.JobSeeker)
+                .FirstOrDefaultAsync(a => a.Id == applicationId && a.JobPostingId == id);
+
+            if (application != null && application.Status == ApplicationStatus.Pending)
+            {
+                application.Status = ApplicationStatus.Invited;
+                application.FeedbackMessage = "Bạn đã được mời tham gia phỏng vấn. Vui lòng kiểm tra email hoặc liên hệ nhà tuyển dụng để biết thêm chi tiết!";
+                await _context.SaveChangesAsync();
+                // TODO: Gửi email nếu muốn
+            }
+            return RedirectToAction("Applications", new { id });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RejectCandidate(int id, int applicationId)
+        {
+            var application = await _context.JobApplications
+                .Include(a => a.JobSeeker)
+                .FirstOrDefaultAsync(a => a.Id == applicationId && a.JobPostingId == id);
+
+            if (application != null && application.Status == ApplicationStatus.Pending)
+            {
+                application.Status = ApplicationStatus.Rejected;
+                application.FeedbackMessage = "Rất tiếc, bạn chưa được chọn cho vòng phỏng vấn. Chúc bạn may mắn lần sau!";
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("Applications", new { id });
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var job = await _context.JobPostings
+                .FirstOrDefaultAsync(j => j.Id == id && j.UserId == user.Id);
+
+            if (job == null) return NotFound();
+
+            _context.JobPostings.Remove(job);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Dashboard");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CandidateDetail(int id, int applicationId)
+        {
+            var job = await _context.JobPostings
+                .Include(j => j.Applications)
+                .ThenInclude(a => a.JobSeeker)
+                .FirstOrDefaultAsync(j => j.Id == id);
+
+            if (job == null) return NotFound();
+
+            var application = job.Applications.FirstOrDefault(a => a.Id == applicationId);
+            if (application == null) return NotFound();
+
+            return View("CandidateDetail", application);
+        }
     }
 }

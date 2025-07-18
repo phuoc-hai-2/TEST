@@ -72,11 +72,13 @@
                                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                     <li>
                                         <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">
-                                            Quản lý tài khoản
+                                            <i class="bi bi-person-circle"></i> Quản lý tài khoản
                                         </a>
+                                    </li>
+                                    <li>
                                         <form method="post" asp-area="Identity" asp-page="/Account/Logout" class="m-0 p-0">
                                             <button type="submit" class="dropdown-item btn btn-link p-0 text-start">
-                                                Đăng xuất
+                                                <i class="bi bi-box-arrow-right"></i> Đăng xuất
                                             </button>
                                         </form>
                                     </li>

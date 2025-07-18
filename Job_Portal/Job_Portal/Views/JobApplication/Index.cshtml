@@ -16,6 +16,8 @@
                         <th>Mức lương</th>
                         <th>Hạn nộp</th>
                         <th>Ngày ứng tuyển</th>
+                        <th>Trạng thái</th>
+                        <th>Thông báo</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -29,6 +31,26 @@
                             <td>@app.JobPosting?.Salary</td>
                             <td>@app.JobPosting?.ApplicationDeadline.ToString("dd/MM/yyyy")</td>
                             <td>@app.AppliedDate.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                @switch (app.Status)
+                                {
+                                    case Job_Portal.Models.ApplicationStatus.Invited:
+                                        <span class="badge bg-success">Đã mời phỏng vấn</span>
+                                        break;
+                                    case Job_Portal.Models.ApplicationStatus.Rejected:
+                                        <span class="badge bg-danger">Đã loại</span>
+                                        break;
+                                    default:
+                                        <span class="badge bg-secondary">Chờ xác nhận</span>
+                                        break;
+                                }
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(app.FeedbackMessage))
+                                {
+                                    <span class="text-info">@app.FeedbackMessage</span>
+                                }
+                            </td>
                             <td>
                                 <a asp-controller="Jobs" asp-action="Details" asp-route-id="@app.JobPostingId" class="btn btn-info btn-sm">Xem chi tiết</a>
                             </td>
