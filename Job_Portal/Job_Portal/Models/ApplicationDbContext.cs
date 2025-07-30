@@ -21,6 +21,7 @@ namespace Job_Portal.Data
         {
             base.OnModelCreating(builder);
 
+            // Định nghĩa quan hệ
             builder.Entity<JobPosting>()
                 .HasOne(j => j.Employer)
                 .WithMany(u => u.JobPostings)
@@ -58,6 +59,17 @@ namespace Job_Portal.Data
             builder.Entity<JobPosting>()
                 .Property(j => j.Salary)
                 .HasColumnType("decimal(18,2)");
+
+            builder.Entity<Category>().HasData(
+                new Category { Id = 1, Name = "IT" },
+                new Category { Id = 2, Name = "Finance" },
+                new Category { Id = 3, Name = "Education" }
+            );
+            builder.Entity<Company>().HasData(
+                new Company { Id = 1, Name = "Microsoft", Description = "Tech company", Website = "https://microsoft.com" },
+                new Company { Id = 2, Name = "Vietcombank", Description = "Banking", Website = "https://vietcombank.com.vn" },
+                new Company { Id = 3, Name = "FPT", Description = "IT services", Website = "https://fpt.com.vn" }
+            );
         }
     }
 }
