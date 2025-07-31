@@ -115,7 +115,7 @@ namespace Job_Portal.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
 
                     b.HasData(
                         new
@@ -158,7 +158,7 @@ namespace Job_Portal.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Companies");
+                    b.ToTable("Companies", (string)null);
 
                     b.HasData(
                         new
@@ -217,7 +217,7 @@ namespace Job_Portal.Migrations
 
                     b.HasIndex("JobSeekerId");
 
-                    b.ToTable("JobApplications");
+                    b.ToTable("JobApplications", (string)null);
                 });
 
             modelBuilder.Entity("Job_Portal.Models.JobPosting", b =>
@@ -301,7 +301,7 @@ namespace Job_Portal.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("JobPostings");
+                    b.ToTable("JobPostings", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
