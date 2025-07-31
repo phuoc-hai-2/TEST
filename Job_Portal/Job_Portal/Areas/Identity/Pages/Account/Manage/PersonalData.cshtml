@@ -6,22 +6,12 @@
 }
 
 <h3>@ViewData["Title"]</h3>
-
-<div class="row">
-    <div class="col-md-6">
-        <p>Tài khoản của bạn chứa dữ liệu cá nhân mà bạn đã cung cấp cho chúng tôi. Trang này cho phép bạn tải xuống hoặc xóa dữ liệu đó.</p>
-        <p>
-            <strong>Xóa dữ liệu này sẽ xóa vĩnh viễn tài khoản của bạn và điều này không thể khôi phục.</strong>
-        </p>
-        <form id="download-data" asp-page="DownloadPersonalData" method="post" class="form-group">
-            <button class="btn btn-primary" type="submit">Tải xuống</button>
-        </form>
-        <p>
-            <a id="delete" asp-page="DeletePersonalData" class="btn btn-danger">Xóa</a>
-        </p>
-    </div>
+<div class="col-md-3 mb-4">
+    <partial name="_ManageNav" />
+<div class="alert alert-info">
+    <p>Bạn có thể yêu cầu xuất toàn bộ dữ liệu cá nhân mà hệ thống lưu trữ về bạn.</p>
 </div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+</div>
+<form method="post">
+    <button class="btn btn-outline-primary" type="submit">Xuất dữ liệu cá nhân</button>
+</form>

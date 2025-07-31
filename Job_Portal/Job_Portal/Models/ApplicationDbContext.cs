@@ -16,12 +16,12 @@ namespace Job_Portal.Data
         public DbSet<JobApplication> JobApplications { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Company> Companies { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            // Định nghĩa quan hệ
             builder.Entity<JobPosting>()
                 .HasOne(j => j.Employer)
                 .WithMany(u => u.JobPostings)

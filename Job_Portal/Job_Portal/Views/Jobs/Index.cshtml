@@ -1,13 +1,16 @@
 ﻿@model List<Job_Portal.Models.JobPosting>
 @{
     ViewData["Title"] = "Danh sách việc làm mới nhất";
-    var currentKeyword = Context.Request.Query["keyword"].ToString();
-    var currentLocation = Context.Request.Query["location"].ToString();
-    var currentJobType = Context.Request.Query["jobType"].ToString();
-    var currentMinSalary = Context.Request.Query["minSalary"].ToString();
-    var currentMaxSalary = Context.Request.Query["maxSalary"].ToString();
+    int currentPage = ViewBag.CurrentPage ?? 1;
+    int totalPages = ViewBag.TotalPages ?? 1;
+    string keyword = ViewBag.Keyword as string ?? "";
+    string location = ViewBag.Location as string ?? "";
+    string jobType = ViewBag.JobType as string ?? "";
+    decimal? minSalary = ViewBag.MinSalary as decimal?;
+    decimal? maxSalary = ViewBag.MaxSalary as decimal?;
     var jobTypes = new[] { "Toàn thời gian", "Bán thời gian", "Thực tập" };
 }
+
 <div class="main-content-section portal-bg">
     <div class="joblist-wrapper mx-auto">
         <h2 class="heading-joblist">@ViewData["Title"]</h2>
@@ -15,11 +18,11 @@
         <form method="get" class="row g-3 mb-4 justify-content-center align-items-end">
             <div class="col-12 col-md-3">
                 <label class="form-label fw-semibold mb-0">Từ khoá</label>
-                <input name="keyword" value="@currentKeyword" type="text" class="form-control" placeholder="Nhập vị trí, kỹ năng, công ty...">
+                <input name="keyword" value="@keyword" type="text" class="form-control" placeholder="Nhập vị trí, kỹ năng, công ty...">
             </div>
             <div class="col-6 col-md-2">
                 <label class="form-label fw-semibold mb-0">Địa điểm</label>
-                <input name="location" value="@currentLocation" type="text" class="form-control" placeholder="TP.HCM, Hà Nội...">
+                <input name="location" value="@location" type="text" class="form-control" placeholder="TP.HCM, Hà Nội...">
             </div>
             <div class="col-6 col-md-2">
                 <label class="form-label fw-semibold mb-0">Loại hình</label>
@@ -27,24 +30,17 @@
                     <option value="">Tất cả</option>
                     @foreach (var type in jobTypes)
                     {
-                        if (type == currentJobType)
-                        {
-                            <option value="@type" selected>@type</option>
-                        }
-                        else
-                        {
-                            <option value="@type">@type</option>
-                        }
+                        <option value="@type" selected="@(type == jobType ? "selected" : null)">@type</option>
                     }
                 </select>
             </div>
             <div class="col-6 col-md-2">
                 <label class="form-label fw-semibold mb-0">Lương từ</label>
-                <input name="minSalary" type="number" value="@currentMinSalary" class="form-control" min="0" placeholder="VNĐ">
+                <input name="minSalary" type="number" value="@(minSalary ?? null)" class="form-control" min="0" placeholder="VNĐ">
             </div>
             <div class="col-6 col-md-2">
                 <label class="form-label fw-semibold mb-0">Đến</label>
-                <input name="maxSalary" type="number" value="@currentMaxSalary" class="form-control" min="0" placeholder="VNĐ">
+                <input name="maxSalary" type="number" value="@(maxSalary ?? null)" class="form-control" min="0" placeholder="VNĐ">
             </div>
             <div class="col-6 col-md-1 d-grid">
                 <label class="form-label fw-semibold mb-0" style="opacity:0;">Tìm kiếm</label>
@@ -63,7 +59,7 @@
             {
                 var isExpired = job.ApplicationDeadline < DateTime.UtcNow;
                 var isClosed = job.IsClosed;
-                <div class="col-12 col-md-6 col-lg-6 d-flex">
+                <div class="col-12 col-md-6 col-lg-4 d-flex">
                     <div class="job-card card shadow-sm border-0 flex-fill rounded-4 w-100">
                         <div class="card-body px-4 py-3 d-flex flex-column h-100">
                             <h5 class="card-title fw-bold text-dark mb-2">@job.Title</h5>
@@ -119,159 +115,25 @@
                 </div>
             }
         </div>
+        <!-- PHÂN TRANG -->
+        @if (totalPages > 1)
+        {
+            <nav aria-label="Job pagination" class="d-flex justify-content-center mt-4">
+                <ul class="pagination">
+                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { page = currentPage - 1, keyword, location, jobType, minSalary, maxSalary })" tabindex="-1">Trước</a>
+                    </li>
+                    @for (int i = 1; i <= totalPages; i++)
+                    {
+                        <li class="page-item @(i == currentPage ? "active" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { page = i, keyword, location, jobType, minSalary, maxSalary })">@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { page = currentPage + 1, keyword, location, jobType, minSalary, maxSalary })">Tiếp</a>
+                    </li>
+                </ul>
+            </nav>
+        }
     </div>
 </div>
-@section Styles {
-    <style>
-        body, html, .portal-bg {
-            background: linear-gradient(120deg, #eef3fc 0%, #f6faff 70%) !important;
-        }
-
-        .main-content-section {
-            min-height: 100vh;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            padding-top: 0;
-        }
-
-        .joblist-wrapper {
-            background: #fff;
-            border-radius: 32px;
-            box-shadow: 0 6px 40px 0 rgba(0,0,0,.11), 0 1.5px 6px 0 rgba(0,0,0,.03);
-            padding: 38px 56px 38px 56px;
-            min-height: 540px;
-            width: 100%;
-            max-width: 1150px;
-        }
-
-        .heading-joblist {
-            font-size: 2.3rem;
-            font-weight: 800;
-            color: #1581f7;
-            letter-spacing: .5px;
-            margin-bottom: 38px;
-            text-align: center;
-        }
-
-        .job-card {
-            background: #fff;
-            border-radius: 20px;
-            box-shadow: 0 2px 16px 0 rgba(0,0,0,.09), 0 1.5px 6px 0 rgba(0,0,0,.04);
-            min-width: 370px;
-            max-width: 520px;
-            padding: 21px 28px 18px 28px;
-            margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            transition: box-shadow 0.18s, transform 0.18s;
-        }
-
-            .job-card:hover {
-                box-shadow: 0 6px 32px 0 rgba(0,0,0,.14), 0 1.5px 6px 0 rgba(0,0,0,.07);
-                transform: translateY(-4px) scale(1.012);
-            }
-
-            .job-card .card-title, .job-card h5 {
-                font-size: 1.17rem;
-                font-weight: bold;
-                color: #20294a;
-                margin-bottom: 10px;
-                min-height: 36px;
-            }
-
-        .job-info {
-            font-size: 1.04rem;
-            margin-bottom: 3.5px;
-            color: #222a;
-        }
-
-            .job-info span,
-            .job-info b,
-            .job-info i {
-                vertical-align: middle;
-            }
-
-            .job-info i {
-                font-size: 1.05em;
-                margin-right: 2px;
-            }
-
-        .job-card .badge {
-            font-size: 0.97em;
-            font-weight: 500;
-            padding: 4px 14px;
-            border-radius: 10px;
-            margin-left: 3px;
-            white-space: nowrap;
-        }
-
-        .badge.bg-success {
-            background-color: #18bb53 !important;
-        }
-
-        .badge.bg-warning {
-            background-color: #ffc107 !important;
-            color: #262626 !important;
-        }
-
-        .badge.bg-danger {
-            background-color: #f1416c !important;
-        }
-
-        .btn-primary {
-            background: #1581f7;
-            border: none;
-            font-weight: 500;
-            font-size: 1.07rem;
-            letter-spacing: .2px;
-            border-radius: 8px;
-        }
-
-            .btn-primary:hover, .btn-primary:focus {
-                background: #0061d4;
-            }
-        media (max-width: 1200px) {
-            .joblist-wrapper
-
-        {
-            padding: 18px 8px;
-            max-width: 1000px;
-        }
-
-        .job-card {
-            min-width: 320px;
-            max-width: 440px;
-        }
-
-        }
-        media (max-width: 992px) {
-            .joblist-wrapper
-
-        {
-            padding: 16px 4px;
-            max-width: 100%;
-        }
-
-        .job-card {
-            min-width: 280px;
-            max-width: 100%;
-        }
-
-        }
-        media (max-width: 768px) {
-            .main-content-section
-
-        {
-            padding: 0;
-        }
-
-        .joblist-wrapper {
-            padding: 6px 0;
-            border-radius: 0;
-        }
-
-        }
-    </style>
-}

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Job_Portal.Data;
 using System.Threading.Tasks;
 using System.Linq;
+using System;
 
 namespace Job_Portal.Controllers
 {
@@ -15,8 +16,11 @@ namespace Job_Portal.Controllers
         }
 
         // GET: /Jobs
-        public async Task<IActionResult> Index(string keyword, string location, string jobType, decimal? minSalary, decimal? maxSalary)
+        public async Task<IActionResult> Index(
+            string keyword, string location, string jobType, decimal? minSalary, decimal? maxSalary, int page = 1)
         {
+            int pageSize = 6;
+
             var jobs = _context.JobPostings
                 .Include(j => j.Company)
                 .Include(j => j.Category)
@@ -38,7 +42,19 @@ namespace Job_Portal.Controllers
             if (maxSalary.HasValue)
                 jobs = jobs.Where(j => j.Salary <= maxSalary);
 
-            var jobList = await jobs.OrderByDescending(j => j.PostedDate).ToListAsync();
+            int totalJobs = await jobs.CountAsync();
+            var jobList = await jobs.OrderByDescending(j => j.PostedDate)
+                .Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalJobs / pageSize);
+
+            ViewBag.Keyword = keyword;
+            ViewBag.Location = location;
+            ViewBag.JobType = jobType;
+            ViewBag.MinSalary = minSalary;
+            ViewBag.MaxSalary = maxSalary;
+
             return View(jobList);
         }
 

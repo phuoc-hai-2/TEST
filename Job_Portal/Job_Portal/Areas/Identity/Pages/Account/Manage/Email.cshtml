@@ -4,40 +4,35 @@
     ViewData["Title"] = "Quản lý Email";
     ViewData["ActivePage"] = ManageNavPages.Email;
 }
-
-<h3>@ViewData["Title"]</h3>
-<partial name="_StatusMessage" model="Model.StatusMessage" />
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-3 mb-4">
+        <partial name="_ManageNav" />
+    </div>
+    <div class="col-md-9">
+        <h3>@ViewData["Title"]</h3>
+        <partial name="_StatusMessage" model="Model.StatusMessage" />
         <form id="email-form" method="post">
             <div asp-validation-summary="All" class="text-danger" role="alert"></div>
             <div class="form-floating mb-3">
-                <input asp-for="Email" class="form-control" placeholder="name@example.com" disabled />
-                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" placeholder="Email hiện tại" disabled />
+                <label asp-for="Email" class="form-label">Email hiện tại</label>
             </div>
-            @if (Model.IsEmailConfirmed)
-            {
-                <div class="input-group">
-                    <input asp-for="Input.NewEmail" class="form-control" placeholder="Vui lòng nhập email mới của bạn." />
-                    <button id="change-email-button" type="submit" asp-page-handler="ChangeEmail" class="btn btn-primary">Thay đổi email</button>
-                    <label asp-for="Input.NewEmail" class="form-label"></label>
-                    <span asp-validation-for="Input.NewEmail" class="text-danger"></span>
-                </div>
-            }
-            else
-            {
-                <button id="email-verification" type="submit" asp-page-handler="SendVerificationEmail" class="btn btn-link">Gửi email xác nhận</button>
-            }
             <div class="form-floating mb-3">
-                <input asp-for="Input.NewEmail" class="form-control" placeholder="Vui lòng nhập email mới của bạn." />
+                <input asp-for="Input.NewEmail" class="form-control" placeholder="Nhập email mới" />
                 <label asp-for="Input.NewEmail" class="form-label">Email mới</label>
                 <span asp-validation-for="Input.NewEmail" class="text-danger"></span>
             </div>
-            <button id="change-email-button" type="submit" asp-page-handler="ChangeEmail" class="w-100 btn btn-lg btn-primary">Thay đổi email</button>
+            <button id="change-email-button" type="submit" asp-page-handler="ChangeEmail" class="w-100 btn btn-lg btn-primary">Lưu email mới</button>
+            @if (!Model.IsEmailConfirmed)
+            {
+                <div class="mt-3">
+                    <span class="text-warning">Email của bạn chưa được xác nhận.</span>
+                    <button id="email-verification" type="submit" asp-page-handler="SendVerificationEmail" class="btn btn-link">Gửi lại email xác nhận</button>
+                </div>
+            }
         </form>
     </div>
 </div>
-
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

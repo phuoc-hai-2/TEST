@@ -1,21 +1,16 @@
 ﻿@inject SignInManager<ApplicationUser> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
-    var isEmployer = User.IsInRole("Employer");
-    var isJobSeeker = User.IsInRole("JobSeeker");
 }
 <ul class="nav nav-pills flex-column">
-    <li class="nav-item"><a class="nav-link @ManageNavPages.IndexNavClass(ViewContext)" id="profile" asp-page="./Index">Hồ sơ</a></li>
-    <li class="nav-item"><a class="nav-link @ManageNavPages.EmailNavClass(ViewContext)" id="email" asp-page="./Email">Email</a></li>
-    <li class="nav-item"><a class="nav-link @ManageNavPages.ChangePasswordNavClass(ViewContext)" id="change-password" asp-page="./ChangePassword">Mật khẩu</a></li>
-    <li class="nav-item"><a class="nav-link @ManageNavPages.SetPasswordNavClass(ViewContext)" id="set-password" asp-page="./SetPassword">Đặt mật khẩu</a></li>
+    <li class="nav-item"><a class="nav-link @ManageNavPages.IndexNavClass(ViewContext)" asp-page="./Index">Hồ sơ</a></li>
+    <li class="nav-item"><a class="nav-link @ManageNavPages.EmailNavClass(ViewContext)" asp-page="./Email">Email</a></li>
+    <li class="nav-item"><a class="nav-link @ManageNavPages.SetPasswordNavClass(ViewContext)" asp-page="./SetPassword">Đặt mật khẩu</a></li>
     @if (hasExternalLogins)
     {
-        <li id="external-logins" class="nav-item">
-            <a id="external-logins-link" class="nav-link @ManageNavPages.ExternalLoginsNavClass(ViewContext)" asp-page="./ExternalLogins">Đăng nhập ngoài</a>
-        </li>
+        <li class="nav-item"><a class="nav-link @ManageNavPages.ExternalLoginsNavClass(ViewContext)" asp-page="./ExternalLogins">Đăng nhập ngoài</a></li>
     }
-    <li class="nav-item"><a class="nav-link @ManageNavPages.TwoFactorAuthenticationNavClass(ViewContext)" id="two-factor" asp-page="./TwoFactorAuthentication">Xác thực 2 yếu tố</a></li>
-    <li class="nav-item"><a class="nav-link @ManageNavPages.PersonalDataNavClass(ViewContext)" id="personal-data" asp-page="./PersonalData">Dữ liệu cá nhân</a></li>
-    <li class="nav-item"><a class="nav-link @ManageNavPages.DeletePersonalDataNavClass(ViewContext)" id="delete-personal-data" asp-page="./DeletePersonalData">Xoá tài khoản</a></li>
+    <li class="nav-item"><a class="nav-link @ManageNavPages.TwoFactorAuthenticationNavClass(ViewContext)" asp-page="./TwoFactorAuthentication">Xác thực 2 yếu tố</a></li>
+    <li class="nav-item"><a class="nav-link @ManageNavPages.PersonalDataNavClass(ViewContext)" asp-page="./PersonalData">Dữ liệu cá nhân</a></li>
+    <li class="nav-item"><a class="nav-link @ManageNavPages.DeletePersonalDataNavClass(ViewContext)" asp-page="./DeletePersonalData">Xoá tài khoản</a></li>
 </ul>

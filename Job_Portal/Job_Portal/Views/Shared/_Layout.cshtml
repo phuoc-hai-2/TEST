@@ -105,46 +105,8 @@
     </header>
 
     <div class="container-fluid custom-bg py-4" style="min-height:90vh;">
-        <div class="row flex-lg-nowrap justify-content-center" style="gap:40px;">
-            <div class="col-lg-3 mb-4 px-0 d-flex justify-content-center">
-                <aside class="sidebar w-100">
-                    <div class="sidebar-section">
-                        <h5>Việc làm</h5>
-                        <ul>
-                            <li><a asp-area="" asp-controller="Jobs" asp-action="Index" class="@(currentController == "Jobs" ? "active-link" : "")">Việc làm mới nhất</a></li>
-                        </ul>
-                    </div>
-                    @if (isSignedIn && isJobSeeker)
-                    {
-                        <div class="sidebar-section">
-                            <h5>Việc của tôi</h5>
-                            <ul>
-                                <li>
-                                    <a class="@(currentController == "JobApplication" ? "active-link" : "")"
-                                       asp-area="" asp-controller="JobApplication" asp-action="Index">Việc đã ứng tuyển</a>
-                                </li>
-                            </ul>
-                        </div>
-                    }
-                    @if (isSignedIn && isEmployer)
-                    {
-                        <div class="sidebar-section">
-                            <h5>Quản lý tuyển dụng</h5>
-                            <ul>
-                                <li>
-                                    <a class="@(currentController == "Employer" && currentAction == "Dashboard" ? "active-link" : "")"
-                                       asp-area="" asp-controller="Employer" asp-action="Dashboard">Danh sách tin tuyển dụng</a>
-                                </li>
-                                <li>
-                                    <a class="@(currentController == "Employer" && currentAction == "Create" ? "active-link" : "")"
-                                       asp-area="" asp-controller="Employer" asp-action="Create">Đăng tin mới</a>
-                                </li>
-                            </ul>
-                        </div>
-                    }
-                </aside>
-            </div>
-            <div class="col-lg-9 px-0">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-10 px-0">
                 <main role="main" class="pb-3">
                     @RenderBody()
                 </main>
